@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario de un viaje imposible - Experiencia Interactiva</title>
+    <style>
+        :root {
+            --bg-color: #f4efe6;
+            --primary-color: #4a2e1b;
+            --accent-color: #8c5a32;
+            --gold-color: #d4af37;
+            --card-bg: #fffbf5;
+            --text-color: #2b1d0c;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--gold-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: var(--accent-color);
+            flex-wrap: wrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 14px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-family: inherit;
+            position: relative;
+            outline: none;
+        }
+
+        nav button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0%;
+            height: 3px;
+            background-color: var(--gold-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        nav button:hover::after, nav button.active::after {
+            width: 100%;
+        }
+
+        nav button:hover, nav button.active {
+            background-color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 20px auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid #dcd0c0;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        @media (max-width: 700px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .img-box {
+            width: 100%;
+            text-align: center;
+        }
+
+        .img-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 3px solid var(--gold-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            background-color: #e0d5c1;
+        }
+
+        .bio-card {
+            background: var(--card-bg);
+            border: 1px solid #dcd0c0;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .bio-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .bio-card img {
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--gold-color);
+            flex-shrink: 0;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            background-color: #e0d5c1;
+        }
+
+        @media (max-width: 600px) {
+            .bio-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+
+        /* Cronología */
+        .timeline {
+            position: relative;
+            padding: 10px 0;
+            list-style: none;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px;
+            width: 4px;
+            background: var(--gold-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 50px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid var(--gold-color);
+        }
+
+        .timeline-date {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 1.15em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .timeline-img {
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 2px solid var(--gold-color);
+            margin: 10px 0;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+
+        /* Grid de Glosario y Comidas */
+        .glossary-grid, .culture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .glossary-item {
+            background: #fff;
+            border: 1px solid #dcd0c0;
+            padding: 15px;
+            border-radius: 6px;
+            border-top: 3px solid var(--gold-color);
+        }
+
+        .glossary-item h4 {
+            margin: 0 0 8px 0;
+            color: var(--primary-color);
+            font-size: 1.15em;
+        }
+
+        .food-card, .culture-card {
+            background: #fff;
+            border: 1px solid #dcd0c0;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s ease;
+        }
+
+        .food-card:hover, .culture-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .food-card img, .culture-card img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-bottom: 3px solid var(--gold-color);
+            background-color: #e0d5c1;
+        }
+
+        .food-card-body, .culture-card-body {
+            padding: 15px;
+        }
+
+        .food-card-body h4, .culture-card-body h4 {
+            margin: 0 0 8px 0;
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+
+        /* Visualizadores 360 Responsive */
+        .iframe-360-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 3px solid var(--gold-color);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            background-color: #111;
+        }
+
+        .iframe-360-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* CHAT INTERACTIVO CON GLOBITO */
+        .chat-container {
+            background: var(--card-bg);
+            border: 1px solid #dcd0c0;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .selector-personaje {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .selector-personaje button {
+            padding: 10px 18px;
+            border: 2px solid var(--accent-color);
+            background: #fff;
+            color: var(--primary-color);
+            cursor: pointer;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .selector-personaje button.selected, .selector-personaje button:hover {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+        }
+
+        .chat-escenario {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            margin-bottom: 30px;
+            background: #fdfaf5;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2d7c7;
+            min-height: 220px;
+        }
+
+        @media (max-width: 650px) {
+            .chat-escenario {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .personaje-avatar-box {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .personaje-avatar-box img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--gold-color);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #e0d5c1;
+            transition: transform 0.3s ease;
+        }
+
+        .personaje-nombre {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+
+        .globito-texto {
+            position: relative;
+            background: #ffffff;
+            border: 2px solid var(--primary-color);
+            border-radius: 18px;
+            padding: 20px 25px;
+            flex-grow: 1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .globito-texto::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 35px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 10px 16px 10px 0;
+            border-color: transparent var(--primary-color) transparent transparent;
+        }
+
+        .globito-texto::after {
+            content: '';
+            position: absolute;
+            left: -13px;
+            top: 36px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 9px 14px 9px 0;
+            border-color: transparent #ffffff transparent transparent;
+        }
+
+        @media (max-width: 650px) {
+            .globito-texto::before {
+                left: 50%;
+                top: -16px;
+                transform: translateX(-50%);
+                border-width: 0 10px 16px 10px;
+                border-color: transparent transparent var(--primary-color) transparent;
+            }
+            .globito-texto::after {
+                left: 50%;
+                top: -13px;
+                transform: translateX(-50%);
+                border-width: 0 9px 14px 9px;
+                border-color: transparent transparent #ffffff transparent;
+            }
+        }
+
+        .globito-pregunta {
+            font-size: 0.9em;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .globito-respuesta {
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .animar-globito {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .panel-preguntas-titulo {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .opciones-preguntas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .opciones-preguntas button {
+            text-align: left;
+            padding: 14px 16px;
+            background: #ffffff;
+            border: 1px solid #dcd0c0;
+            border-left: 4px solid var(--accent-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.98em;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+        }
+
+        .opciones-preguntas button:hover {
+            background: #fdf5e6;
+            border-left-color: var(--gold-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Diario de un viaje imposible</h1>
+    <p>Guía interactiva & Análisis de la obra de Lucía Laragione y Ana María Shua</p>
+</header>
+
+<nav>
+    <button class="active" onclick="switchTab('libro', event)">📖 El Libro</button>
+    <button onclick="switchTab('resumen', event)">📜 Resumen Extendido</button>
+    <button onclick="switchTab('cultura', event)">🏛 Cultura Colonial</button>
+    <button onclick="switchTab('cronologia', event)">⏳ Cronología de 1810</button>
+    <button onclick="switchTab('personajes', event)">👥 Personajes</button>
+    <button onclick="switchTab('glosario', event)">📚 Glosario</button>
+    <button onclick="switchTab('analisis', event)">💡 Temas y Análisis</button>
+    <button onclick="switchTab('vista360', event)">🌐 Recorrido 360°</button>
+    <button onclick="switchTab('interactivo', event)">💬 Chat Interactivo</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECCIÓN EL LIBRO -->
+    <div id="tab-libro" class="tab-content active">
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/k5N3swRD/IMG-3096.webp" alt="Portada del libro Diario de un viaje imposible">
+            </div>
+            <div>
+                <h2>Ficha Técnica y Marco Literario</h2>
+                <p><strong>Título:</strong> Diario de un viaje imposible</p>
+                <p><strong>Autoras:</strong> Lucía Laragione y Ana María Shua</p>
+                <p><strong>Ilustraciones:</strong> Carlus Rodríguez</p>
+                <p><strong>Editorial:</strong> Alfaguara / Altea (Serie Azul)</p>
+                <p><strong>Género:</strong> Novela histórica juvenil / Ciencia ficción / Viaje en el tiempo</p>
+
+                <h3>Argumento General</h3>
+                <p>La novela entrelaza la literatura de viajes en el tiempo con la reconstrucción detallada e histórica de la Revolución de Mayo de 1810 en el Virreinato del Río de la Plata. La trama contrapone el estilo de vida lleno de tecnología de un chico contemporáneo con la sociedad colonial porteña, creando una mirada ágil, entretenida y muy educativa sobre la libertad, las costumbres y la formación de la identidad nacional.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN RESUMEN EXTENDIDO -->
+    <div id="tab-resumen" class="tab-content">
+        <h2>Resumen Extendido y Detallado de la Obra</h2>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/k5N3swRD/IMG-3096.webp" alt="Emanuel y el experimento del Tío Francis">
+            </div>
+            <div>
+                <h3>1. El Experimento y el Salto Temporal</h3>
+                <p>Emanuel Rizzo, un chico de 12 años del siglo XXI apasionado por la tecnología, acepta probar el prototipo secreto de máquina del tiempo diseñado por su excéntrico tío Francis. La máquina —un cajón especial que solo soporta un límite de 44 kilos y funciona con condensadores electromagnéticos solares— proyecta a Emanuel al pasado. Tras un destello cegador, Emanuel despierta en abril de 1810 en el depósito de carretas de la casona de Don Blas de Ulloa, un hombre culto y respetado en la Buenos Aires colonial.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/6qFr5Ljs/Whats-App-Image-2026-09-30-at-21-27-56.jpg" alt="Emanuel y Margarita en la casa colonial">
+            </div>
+            <div>
+                <h3>2. La Identidad Falsa y el Desafío de Margarita</h3>
+                <p>Para encajar en la época sin despertar pánico ni denuncias por hechicería, Don Blas acoge al niño bajo el seudónimo de "Manuelito de los Rizos", justificando que es un pariente criollo venido de Europa. Sin embargo, Margarita, la perspicaz nieta de Don Blas de 12 años, nota de inmediato irregularidades: la ropa con cierres metálicos y suelas de goma, el uso de palabras extrañas como "ok" o "celular", y el manejo de un artefacto brillante con luz propia (el smartphone). A pesar de las excusas, Margarita lo descubre y Emanuel debe revelarle la verdad sobre su origen futuro.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/9fP5b1w1/IMG-3097.jpg" alt="Reuniones secretas de la Jabonería de Vieytes">
+            </div>
+            <div>
+                <h3>3. La Conspiración Libertaria en la Jabonería de Vieytes</h3>
+                <p>Integrado a la vida de la casa, Emanuel presencia la tensión política del Virreinato. Don Blas lo lleva a las reuniones clandestinas en la Jabonería de Vieytes y en la Quinta de Orma. Allí escucha debatir a próceres como Manuel Belgrano, Cornelio Saavedra, Juan José Castelli y Nicolás Rodríguez Peña. Gracias a las clases de historia de su colegio, Emanuel les adelanta en secreto la confirmación de que la Junta Central de Sevilla ha caído en España por el avance de Napoleón Bonaparte, mucho antes de que los informes marítimos oficiales lleguen al puerto de Buenos Aires.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/tgdQkDnV/IMG-3098.jpg" alt="Acontecimientos de la Semana de Mayo">
+            </div>
+            <div>
+                <h3>4. El Clímax de la Semana de Mayo y el Cabildo Abierto</h3>
+                <p>La noticia confirmada por el buque inglés <em>HMS Mistletoe</em> desata la crisis del 18 de mayo. Mientras el virrey Cisneros intenta mantener la calma, la 'Legión Infernal' liderada por French y Beruti exige la convocatoria inmediata a un Cabildo Abierto. Emanuel graba audios escondido en su teléfono durante los acontecimientos del 22 de mayo, observando los acalorados debates donde prevalece el argumento de Castelli sobre la soberanía popular. Finalmente, el 25 de mayo de 1810 se constituye la Primera Junta de Gobierno Patrio encabezada por Cornelio Saavedra.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg" alt="El regreso de Emanuel al siglo XXI">
+            </div>
+            <div>
+                <h3>5. La Despedida y el Regreso al Futuro</h3>
+                <p>Una vez completada la gesta patriótica y habiéndose recargado los condensadores solares del artefacto temporal, llega el momento de la partida. En una conmovedora despedida con Don Blas y con Margarita —quien guarda el secreto del futuro como un preciado tesoro de libertad—, Emanuel aborda la máquina del tiempo y retorna a su época. Vuelve cambiado, valorando las comodidades tecnológicas de hoy pero comprendiendo el valor sagrado del coraje y la libertad que fundaron la nación.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CULTURA Y COSTUMBRES COLONIALES -->
+    <div id="tab-cultura" class="tab-content">
+        <h2>Cultura, Costumbres y Vida Cotidiana en 1810</h2>
+
+        <div class="info-card">
+            <h3>Costumbres y Estilo de Vida Cotidiano</h3>
+            <p>La sociedad de la Buenos Aires colonial estaba fuertemente estratificada y marcada por los ritmos del sol y la fe religiosa. Las familias acomodadas realizaban su vida social en torno al patio central de las casonas. La iluminación era escasa, basada en velas de sebo que despedían humo y olor fuerte, o lámparas de aceite. El agua corriente no existía: se consumía agua de lluvia recogida en aljibes o la que vendía el <strong>aguatero</strong> traída desde el río.</p>
+            <p>Los pregones marcaban el ritmo de las mañanas: vendedores ambulantes anunciaban la leche, las velas, el pescado, las escobas y las pasteles con versos rítmicos que se oían desde las ventanas.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Entretenimiento y Recreación</h3>
+            <p>A falta de teatros modernos o medios de comunicación masivos, la diversión colonial variaba según la clase social:</p>
+            
+            <div class="culture-grid" style="margin-top: 15px;">
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/90fNZH76/paseo.jpg" alt="Paseo por la Alameda">
+                    <div class="culture-card-body">
+                        <h4>Los Paseos por la Alameda</h4>
+                        <p>Las caminatas junto al Río de la Plata por las tardes eran el espacio favorito para lucir las vestimentas, conversar y entablar vínculos sociales.</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/8cCnMgvQ/puulperia.jpg" alt="La Pulpería Colonial">
+                    <div class="culture-card-body">
+                        <h4>Las Pulperías</h4>
+                        <p>Punto de encuentro de las clases populares, gauchos y sirvientes. Allí se bebía aguardiente, se jugaba a las cartas, se enteraban de las novedades y disputaban payadas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>Deportes y Juegos de la Época</h3>
+            <p>Los deportes coloniales eran de gran destreza criolla y entusiasmo popular:</p>
+            
+            <div class="culture-grid" style="margin-top: 15px;">
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/90fNZH78/juego-de-la-sorrtiga.jpg" alt="Juego de la Sortija">
+                    <div class="culture-card-body">
+                        <h4>Juego de la Sortija</h4>
+                        <p>Jinetes al galope debían ensartar con un pequeño palillo de madera un aro de metal colgado de un arco.</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/mkr6CWHJ/juego-del-pato.jpg" alt="Juego del Pato">
+                    <div class="culture-card-body">
+                        <h4>Juego del Pato</h4>
+                        <p>Deporte hípico violento donde los jinetes competían por una pelota de cuero con asas a toda velocidad por el campo.</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/d30SrcyX/naipes.jpg" alt="Juegos de Naipes">
+                    <div class="culture-card-body">
+                        <h4>Naipes y Taba</h4>
+                        <p>En las pulperías se jugaba intensamente al truco, al monte y a la taba (lanzamiento del hueso astrágalo del vacuno).</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/KzTtWqhW/descarga.jpg" alt="Riñas de Gallos">
+                    <div class="culture-card-body">
+                        <h4>Riñas de Gallos</h4>
+                        <p>Desafíos populares muy concurridos donde se apostaba sobre el combate de aves en ruedos o reñideros.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--gold-color); padding-bottom: 8px; margin-top: 35px;">(Comidas)</h2>
+        <p>Platos típicos, guisos tradicionales y repostería que constituían la gastronomía colonial del Río de la Plata:</p>
+
+        <div class="glossary-grid" style="margin-top: 20px;">
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/hPXKRH5T/locro.jpg" alt="Locro Criollo">
+                <div class="food-card-body">
+                    <h4>Locro</h4>
+                    <p>Guiso suculento de origen prehispánico a base de maíz blanco, porotos, zapallo, falda vacuna, patitas de cerdo y chorizo colorado, sazonado con salsa picante de cebolla y ají (quiquirimichi).</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/NfKQvWzT/descarga-(1).jpg" alt="Carbonada Colonial">
+                <div class="food-card-body">
+                    <h4>Carbonada</h4>
+                    <p>Guiso tradicional servido tradicionalmente dentro de un zapallo grande ahuecado y horneado. Llevaba carne cortada en trozos, choclo, papas, batatas, orejones de durazno y trozos de manzana.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/CLRwpWQb/Empanadas-Criollas.jpg" alt="Empanadas Criollas">
+                <div class="food-card-body">
+                    <h4>Empanadas Criollas</h4>
+                    <p>Masa casera rellena de carne picada a cuchillo, cebolla, huevo duro, aceitunas y comino. Se cocinaban fritas en grasa de pella hirviendo o en hornos de barro de las casonas.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/kX27PkpS/comida.jpg" alt="Puchero de la Época">
+                <div class="food-card-body">
+                    <h4>Puchero</h4>
+                    <p>Comida diaria muy habitual. Hervido de cortes de carne vacuna con hueso, choclos, zapallo, batatas, repollo y chorizos, servido en grandes fuentes centrales.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/GhC6q61C/humita.jpg" alt="Humita en Chala">
+                <div class="food-card-body">
+                    <h4>Humita en Chala</h4>
+                    <p>Pasta suave de choclo dulce rallado, cebolla, pimentón y queso, envuelta en las propias hojas secas (chalas) del choclo y hervida en atados retorcidos.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/SNhHDHp4/mazamorra.jpg" alt="Mazamorra Colonial">
+                <div class="food-card-body">
+                    <h4>Mazamorra</h4>
+                    <p>El postre más popular de la época. Elaborado con maíz blanco hervido en agua con ceniza limpia o leche, aromatizado con vainilla o canela. Se consumía frío o caliente con miel.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/Kv2CJCyy/pastelitos.jpg" alt="Pastelitos Criollos">
+                <div class="food-card-body">
+                    <h4>Pastelitos Criollos</h4>
+                    <p>Masa crujiente y hojaldrada frita en grasa, con forma de estrellita o pañuelo, rellena de dulce de membrillo o batata, bañada con almíbar tibio y granas de colores.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/PfZBbT0f/Gemini-Generated-Image-bnsx8xbnsx8xbnsx.jpg" alt="Mate y Chocolate Caliente">
+                <div class="food-card-body">
+                    <h4>Chocolate Caliente y Mate</h4>
+                    <p>El mate (amargo o dulce con cascarita de naranja) era la infusión transversal a todas las clases. El chocolate caliente con canela o especias era la bebida distinguida de las tertulias urbanas.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SECCIÓN CRONOLOGÍA HISTÓRICA -->
+    <div id="tab-cronologia" class="tab-content">
+        <h2>La Semana de Mayo de 1810 en la Novela</h2>
+        <div class="info-card">
+            <ul class="timeline">
+                <li class="timeline-item">
+                    <span class="timeline-date">18 de Mayo</span>
+                    <img src="https://i.postimg.cc/7hQtNt3j/Retrato-del-teniente-general-de-la-Armada-Baltasar-Hidalgo-de-Cisneros-(1756-1829)-Ano-nimo.jpg" alt="18 de mayo - Virrey Cisneros" class="timeline-img">
+                    <p>El virrey Cisneros publica la proclama oficial pidiendo calma tras la confirmación de la caída de la Junta de Sevilla en España.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">19 y 20 de Mayo</span>
+                    <img src="https://i.postimg.cc/9fP5b1w1/IMG-3097.jpg" alt="19 y 20 de mayo - Reuniones secretas" class="timeline-img">
+                    <p>Los patriotas se reúnen en la Jabonería de Vieytes y en la quinta de Orma. Saavedra y Belgrano solicitan formalmente al Cabildo el permiso para convocar a una asamblea pública.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">21 de Mayo</span>
+                    <img src="https://i.postimg.cc/8cCnMg6m/a.jpg" alt="21 de mayo - Legion Infernal" class="timeline-img">
+                    <p>Ocurre la "Plaza de la Frontera": la Legión Infernal liderada por French y Beruti presiona al Cabildo para obtener la autorización del Cabildo Abierto.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">22 de Mayo</span>
+                    <img src="https://i.postimg.cc/BbvwHfKR/f.jpg" alt="22 de mayo - Cabildo Abierto" class="timeline-img">
+                    <p>Se realiza el Cabildo Abierto con 251 vecinos. Tras acalorados debates jurídicos (destacándose Castelli y Paso), se vota la destitución del Virrey.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">25 de Mayo</span>
+                    <img src="https://i.postimg.cc/pVDd6N3V/g.jpg" alt="25 de mayo - Primera Junta" class="timeline-img">
+                    <p>Se conforma la Primera Junta de Gobierno Patrio, presidida por Cornelio Saavedra, marcando el inicio formal de la autonomía argentina.</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECCIÓN BIOGRAFÍAS DE PERSONAJES -->
+    <div id="tab-personajes" class="tab-content">
+        <h2>Personajes Principales y Protagonistas</h2>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg" alt="Emanuel Rizzo">
+            <div>
+                <h3>Emanuel Rizzo ("Manuelito de los Rizos")</h3>
+                <p>Chico de 12 años del siglo XXI. De temperamento curioso e ingenioso. Registra sus observaciones en la grabadora de su teléfono móvil mientras busca adaptar sus modales al siglo XIX sin ser descubierto.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/Bv59pNPM/IMG-3107.jpg" alt="Margarita de Ulloa">
+            <div>
+                <h3>Margarita de Ulloa</h3>
+                <p>Joven porteña de 12 años, nieta de Don Blas. Culta, perspicaz e independiente. Cuestiona el rol asignado a la mujer en la colonia y es la primera en descubrir el enigma de Emanuel.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/wxQ3f8sJ/IMG-3110.jpg" alt="Don Blas de Ulloa">
+            <div>
+                <h3>Don Blas de Ulloa</h3>
+                <p>Anfitrión de Emanuel y erudito local. Hombre librepensador, patriota de convicción y tutor afectuoso que integra al joven en las discusiones revolucionarias.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/tgdQkDnV/IMG-3098.jpg" alt="Manuel Belgrano">
+            <div>
+                <h3>Manuel Belgrano</h3>
+                <p>Abogado, intelectual y prócer criollo. Promotor central de las ideas ilustradas, la educación pública y la reorganización política del Río de la Plata.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/hG8WsMQQ/IMG-3099.jpg" alt="Cornelio Saavedra">
+            <div>
+                <h3>Cornelio Saavedra</h3>
+                <p>Comandante del Regimiento de Patricios. Líder militar prudente cuya posición definió el éxito de la destitución del Virrey.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN GLOSARIO COLONIAL -->
+    <div id="tab-glosario" class="tab-content">
+        <h2>Glosario de Términos Históricos de 1810</h2>
+        <div class="info-card">
+            <div class="glossary-grid">
+                <div class="glossary-item">
+                    <h4>Tertulia</h4>
+                    <p>Reunión social habitual en las casas acomodadas donde se conversaba de política, se escuchaba música y se debatían asuntos de actualidad.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Jabonería de Vieytes</h4>
+                    <p>Fábrica de jabón de Hipólito Vieytes y Nicolás Rodríguez Peña usada como fachada para las reuniones secretas de los patriotas.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Cabildo Abierto</h4>
+                    <p>Asamblea extraordinaria convocada en situaciones de emergencia para consultar la opinión de los "vecinos principales" de la ciudad.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Gaceta</h4>
+                    <p>Publicación impresa periódica de la época que difundía noticias políticas, decretos e informes internacionales.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Pregón</h4>
+                    <p>Anuncio o canto en voz alta con el que los vendedores ambulantes anunciaban sus productos por las calles de la ciudad.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Aljibe</h4>
+                    <p>Pozo o depósito subterráneo que recolectaba y almacenaba el agua de lluvia en los patios interiores de las casonas coloniales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN TEMAS Y ANÁLISIS -->
+    <div id="tab-analisis" class="tab-content">
+        <h2>Análisis Temático, Cosmovisión y Perspectivas Literarias</h2>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/T3grnS7J/1.jpg" alt="1. El Choque Cultural y Temporal">
+            </div>
+            <div>
+                <h3>1. El Choque Cultural y Temporal</h3>
+                <p>La obra contrapone las comodidades del siglo XXI (luz eléctrica, teléfonos móviles, inmediatez) con la austeridad y costumbres de 1810. Muestra cómo los avances tecnológicos no reemplazan los valores humanos fundamentales como el coraje y la solidaridad. Emanuel descubre que, sin Wi-Fi ni electricidad, las personas de 1810 tenían una vida rica en diálogo, lectura y compromiso social.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/7YC1Zbgv/2.jpg" alt="2. El Rol de la Mujer en la Colonia y el Pensamiento de Margarita">
+            </div>
+            <div>
+                <h3>2. El Rol de la Mujer en la Colonia y el Pensamiento de Margarita</h3>
+                <p>A través del personaje de Margarita, la novela visibiliza el pensamiento y las limitaciones impuestas a las mujeres en la época colonial. Frente a una sociedad patriarcal que las relegaba al espacio doméstico, al bordado y a la fe, Margarita encarna el espíritu ilustrado de avance: cuestiona las prohibiciones universitarias, lee filosofía a escondidas y reclama activamente un rol en las decisiones políticas del país.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/SNw62qrK/3.jpg" alt="3. La Construcción de la Patria como Proceso Vivo">
+            </div>
+            <div>
+                <h3>3. La Construcción de la Patria como Proceso Vivo</h3>
+                <p>Se aborda la Revolución de Mayo no como un hecho estático o congelado de manual escolar, sino como un proceso lleno de tensiones, dudas, alianzas estratégicas y valentía colectiva. La novela humaniza la gesta patriótica demostrando que la independencia fue el resultado de debates intensos sobre el destino común y no un acontecimiento espontáneo.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/gkfVXdDJ/4.jpg" alt="4. Las Ideas de la Ilustración y la Cosmovisión de 1810">
+            </div>
+            <div>
+                <h3>4. Las Ideas de la Ilustración y la Cosmovisión de 1810</h3>
+                <p>La narración expone el clima ideológico que impulsó la Revolución. Los intelectuales criollos estaban fuertemente influenciados por las ideas de la Ilustración europea (Rousseau, Montesquieu, Voltaire). La doctrina clave debatida en la Jabonería de Vieytes y en el Cabildo Abierto fue la retroversión de la soberanía al pueblo: al estar cautivo el rey Fernando VII y disuelta la Junta Central de Sevilla, la autoridad del Virrey dejaba de ser legítima y el poder regresaba al pueblo para constituir un gobierno propio.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/VLFHQKcQ/c8e591d2-4f70-4386-9b5f-53fe7e7f230c.jpg" alt="5. El Viaje en el Tiempo como Dispositivo Pedagógico y Literario">
+            </div>
+            <div>
+                <h3>5. El Viaje en el Tiempo como Dispositivo Pedagógico y Literario</h3>
+                <p>Las autoras, Lucía Laragione y Ana María Shua, emplean la ciencia ficción como una poderosa herramienta didáctica. El viaje temporal actúa como un espejo: al colocar a un niño moderno en el pasado, el lector experimenta la Historia de primera mano. Este recurso 'desmitifica' a los próceres, bajándolos del pedestal de bronce para mostrarlos como hombres reales, vulnerables pero guiados por ideales elevados.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/gkfVXdDw/6.jpg" alt="6. Tensiones Sociales, Jerarquías y Diversidad Colonial">
+            </div>
+            <div>
+                <h3>6. Tensiones Sociales, Jerarquías y Diversidad Colonial</h3>
+                <p>La novela no oculta la marcada estratificación social de la Buenos Aires colonial. Muestra la rivalidad entre españoles peninsulares (que ostentaban los cargos de mayor privilegio) y los criollos, así como la situación de los sectores populares, mestizos, indígenas y personas esclavizadas. Se pone de relieve cómo el anhelo de libertad comenzaba a germinar en los distintos sectores sociales, aunque con diferentes expectativas y demandas.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/DwLq1Dj1/7.jpg" alt="7. La Información, el Poder y la Circulación de Noticias">
+            </div>
+            <div>
+                <h3>7. La Información, el Poder y la Circulación de Noticias</h3>
+                <p>Existe un paralelo muy interesante entre el teléfono inteligente de Emanuel (tecnología de acceso instantáneo a la información) y el flujo de noticias en 1810, dependiente de barcos que tardaban meses en cruzar el Atlántico. La obra destaca que la información veraz es el combustible de la libertad: el conocimiento anticipado de la caída de Sevilla fue precisamente el detonante político que obligó a acelerar los planes revolucionarios.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/YCY1QVn3/8.jpg" alt="8. Identidad, Memoria Colectiva y Conciencia Ciudadana">
+            </div>
+            <div>
+                <h3>8. Identidad, Memoria Colectiva y Conciencia Ciudadana</h3>
+                <p>A lo largo de su travesía, Emanuel comprende que la libertad de la que disfruta en el siglo XXI no fue un regalo fortuito, sino la consecuencia directa del coraje y el sacrificio de hombres y mujeres de 1810. La novela concluye con una reflexión sobre la memoria histórica: conocer nuestro pasado es la única vía para construir una ciudadanía consciente, crítica y responsable del futuro de la patria.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN RECORRIDO VIRTUAL 360° -->
+    <div id="tab-vista360" class="tab-content">
+        <h2>Recorrido e Inmersión Virtual 360°</h2>
+        <p style="text-align: center; margin-bottom: 25px;">Haz clic y arrastra el cursor (o desliza la pantalla en dispositivos móviles) dentro de cualquiera de los visores para explorar panorámicamente los distintos escenarios históricos:</p>
+
+        <div class="info-card">
+            <h3>1. Plaza Mayor (de Mayo)</h3>
+            <div class="iframe-360-container">
+                <iframe 
+                    src="https://momento360.com/e/u/cfac6b4618b14889a548c71cf35b5355?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    allowfullscreen 
+                    allow="xr-spatial-tracking">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>2. Jaboneria de Vieytes</h3>
+            <div class="iframe-360-container">
+                <iframe 
+                    src="https://momento360.com/e/u/54d810f4d1084ae09c698ac727b3402c?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    allowfullscreen 
+                    allow="xr-spatial-tracking">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>3. Biblioteca de Don Blas de Ulloa</h3>
+            <div class="iframe-360-container">
+                <iframe 
+                    src="https://momento360.com/e/u/c35356cdbc404d53909839db65ea0955?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    allowfullscreen 
+                    allow="xr-spatial-tracking">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CHAT INTERACTIVO -->
+    <div id="tab-interactivo" class="tab-content">
+        <h2>Entrevistas Interactivas con los Personajes</h2>
+        
+        <div class="chat-container">
+            <!-- Selector de Personajes (5 Opciones) -->
+            <div class="selector-personaje">
+                <button class="selected" onclick="seleccionarPersonaje('emanuel', this)">📱 Emanuel</button>
+                <button onclick="seleccionarPersonaje('margarita', this)">📜 Margarita</button>
+                <button onclick="seleccionarPersonaje('donblas', this)">🖋 Don Blas</button>
+                <button onclick="seleccionarPersonaje('belgrano', this)">🇦🇷 Belgrano</button>
+                <button onclick="seleccionarPersonaje('saavedra', this)">⚔ Saavedra</button>
+            </div>
+
+            <!-- Escenario interactivo: Avatar + Globito blanco de respuesta -->
+            <div class="chat-escenario">
+                <div class="personaje-avatar-box">
+                    <img id="charImg" src="https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg" alt="Personaje">
+                    <div id="charName" class="personaje-nombre">Emanuel Rizzo</div>
+                </div>
+
+                <div class="globito-texto animar-globito" id="globitoBox">
+                    <div id="globitoPregunta" class="globito-pregunta" style="display:none;"></div>
+                    <div id="globitoRespuesta" class="globito-respuesta">
+                        ¡Hola! Soy Emanuel. ¡No vas a creerlo pero viajé a 1810 con un prototipo del tío Francis! Toca una de las preguntas de abajo para conversar conmigo.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de preguntas en la parte inferior -->
+            <div class="panel-preguntas-titulo">Hazle una pregunta al personaje:</div>
+            <div class="opciones-preguntas" id="opcionesPreguntas">
+                <!-- Se cargan dinámicamente según el personaje seleccionado -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Cambio de pestañas
+    function switchTab(tabId, event) {
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(c => c.classList.remove('active'));
+
+        const buttons = document.querySelectorAll('nav button');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        const selectedTab = document.getElementById('tab-' + tabId);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+    }
+
+    // Datos y Lógica del Chat Interactivo con 5 Personajes
+    let personajeActual = 'emanuel';
+
+    const datosChat = {
+        emanuel: {
+            nombre: "Emanuel Rizzo",
+            img: "https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg",
+            saludo: "¡Hola! Soy Emanuel. ¡No vas a creerlo pero viajé a 1810 con un prototipo del tío Francis! Toca una de las preguntas de abajo para conversar conmigo.",
+            preguntas: [
+                {
+                    q: "¿Qué fue lo que más te chocó de vivir en 1810?",
+                    a: "¡Sin duda la falta de Wi-Fi y electricidad! Además, al principio la comida con grasa de pella me costó bastante, pero aprendí a valorar muchísimo el diálogo cara a cara."
+                },
+                {
+                    q: "¿Cómo lograste ocultar tu teléfono móvil?",
+                    a: "Les decía que era una 'caja luminosa de cristal'. Margarita me descubrió rápido cuando me vio grabar un audio y tocar la pantalla táctil."
+                },
+                {
+                    q: "¿Qué sentiste al presenciar el Cabildo Abierto?",
+                    a: "Fue impresionante. Los libros del colegio lo cuentan como algo lejano, pero ver a Castelli y Paso discutir con tanta pasión por la patria te pone la piel de gallina."
+                }
+            ]
+        },
+        margarita: {
+            nombre: "Margarita de Ulloa",
+            img: "https://i.postimg.cc/Bv59pNPM/IMG-3107.jpg",
+            saludo: "Saludos. Soy Margarita de Ulloa. En nuestra época las jóvenes no solemos opinar en público, pero yo leo libros de filosofía a escondidas. Hazme una pregunta.",
+            preguntas: [
+                {
+                    q: "¿Cómo descubriste que Emanuel venía del futuro?",
+                    a: "¡Por sus costumbres estrafalarias! Su ropa tenía cierres extraños, usaba calzado con goma y hablaba de cosas raras como 'celulares' e 'internet'."
+                },
+                {
+                    q: "¿Qué opinas del rol de la mujer en tu época?",
+                    a: "Nos imponen bordar y rezar, pero nosotras también tenemos pensamiento propio y amor a la patria. Sueño con un futuro donde las mujeres vayan a la universidad."
+                },
+                {
+                    q: "¿Qué sintieron al saber sobre la caída de Sevilla?",
+                    a: "Entendimos que era la hora decisiva: si España cayó ante Napoleón, el Virrey Cisneros ya no tenía ninguna autoridad legítima sobre nosotros."
+                }
+            ]
+        },
+        donblas: {
+            nombre: "Don Blas de Ulloa",
+            img: "https://i.postimg.cc/wxQ3f8sJ/IMG-3110.jpg",
+            saludo: "Bienvenido a mi biblioteca. Soy Don Blas de Ulloa, servidor de la causa patriota y amante de la Ilustración. Pregúntame lo que desees.",
+            preguntas: [
+                {
+                    q: "¿Por qué protegieron a Emanuel al llegar?",
+                    a: "Noté en sus ojos una pureza noble y un saber singular. Presentarlo como 'Manuelito de los Rizos' evitó habladurías o peligrosas acusaciones de hechicería."
+                },
+                {
+                    q: "¿Qué se discutía en la Jabonería de Vieytes?",
+                    a: "Debatíamos sobre la soberanía popular: si el Rey Fernando VII estaba preso, el poder debía volver al pueblo para elegir nuestro propio gobierno."
+                },
+                {
+                    q: "¿Tenía fe en el éxito de la Revolución?",
+                    a: "La libertad siempre demanda valentía y templanza. Sabía que los criollos estábamos listos para tomar las riendas de nuestro propio destino."
+                }
+            ]
+        },
+        belgrano: {
+            nombre: "Manuel Belgrano",
+            img: "https://i.postimg.cc/tgdQkDnV/IMG-3098.jpg",
+            saludo: "Un saludo cordial. Soy Manuel Belgrano. La causa de la patria exige compromiso, educación e ideales de libertad. ¿Qué deseas consultar sobre nuestras ideas?",
+            preguntas: [
+                {
+                    q: "¿Por qué impulsaban la Revolución con tanto ímpetu?",
+                    a: "Porque entendíamos que el pueblo del Río de la Plata ya estaba maduro para decidir su propio destino sin la tutela colonial de una potencia distante."
+                },
+                {
+                    q: "¿Qué papel juega la educación en su visión de país?",
+                    a: "Un pueblo sin educación es fácil víctima de la tiranía. La instrucción pública, el comercio justo y el trabajo son los pilares de una nación libre."
+                },
+                {
+                    q: "¿Qué opinó sobre las noticias que traía Emanuel?",
+                    a: "Sus datos sobre la caída de la Junta Central de Sevilla confirmaron lo que sospechábamos: era el momento exacto e impostergable para tomar la iniciativa."
+                }
+            ]
+        },
+        saavedra: {
+            nombre: "Cornelio Saavedra",
+            img: "https://i.postimg.cc/hG8WsMQQ/IMG-3099.jpg",
+            saludo: "A sus órdenes. Soy Cornelio Saavedra, comandante del Regimiento de Patricios. La prudencia y la firmeza del brazo armado sostienen nuestra causa.",
+            preguntas: [
+                {
+                    q: "¿Cuál fue el papel del Regimiento de Patricios en Mayo?",
+                    a: "Garantizar la seguridad y respaldar el clamor popular. Sin las armas de la patria defendiendo a la junta criolla, el Virrey jamás hubiese cedido su puesto."
+                },
+                {
+                    q: "¿Por qué pedía actuar con tanta prudencia?",
+                    a: "Debíamos esperar el momento político idóneo. Como dije a los compatriotas: 'Señores, ahora digo que no solo es tiempo, sino que no se debe perder una sola hora'."
+                },
+                {
+                    q: "¿Cómo se vivió la jornada del 25 de mayo?",
+                    a: "Fue un día de enorme expectativa popular en la plaza. Al asumir la presidencia de la Primera Junta sentí la inmensa responsabilidad de conducir los primeros pasos de la patria."
+                }
+            ]
+        }
+    };
+
+    function seleccionarPersonaje(p, btn) {
+        personajeActual = p;
+        
+        // Actualizar estado de botones superiores
+        document.querySelectorAll('.selector-personaje button').forEach(b => b.classList.remove('selected'));
+        if (btn) btn.classList.add('selected');
+
+        // Actualizar foto y nombre
+        const data = datosChat[p];
+        document.getElementById('charImg').src = data.img;
+        document.getElementById('charName').innerText = data.nombre;
+
+        // Resetear globito
+        const globitoBox = document.getElementById('globitoBox');
+        document.getElementById('globitoPregunta').style.display = 'none';
+        document.getElementById('globitoRespuesta').innerText = data.saludo;
+
+        // Reaplicar animación
+        globitoBox.classList.remove('animar-globito');
+        void globitoBox.offsetWidth; // Forzar reflow
+        globitoBox.classList.add('animar-globito');
+
+        // Cargar botones de preguntas
+        cargarPreguntas();
+    }
+
+    function cargarPreguntas() {
+        const contenedor = document.getElementById('opcionesPreguntas');
+        contenedor.innerHTML = '';
+        
+        datosChat[personajeActual].preguntas.forEach(item => {
+            const btn = document.createElement('button');
+            btn.innerText = "❓ " + item.q;
+            btn.onclick = () => responderEnGlobito(item.q, item.a);
+            contenedor.appendChild(btn);
+        });
+    }
+
+    function responderEnGlobito(pregunta, respuesta) {
+        const globitoBox = document.getElementById('globitoBox');
+        const pregBox = document.getElementById('globitoPregunta');
+        const respBox = document.getElementById('globitoRespuesta');
+
+        pregBox.style.display = 'block';
+        pregBox.innerText = `Tú le preguntaste: "${pregunta}"`;
+        respBox.innerText = respuesta;
+
+        // Reiniciar animación del globito al responder
+        globitoBox.classList.remove('animar-globito');
+        void globitoBox.offsetWidth; // Forzar reflow
+        globitoBox.classList.add('animar-globito');
+    }
+
+    // Carga inicial
+    window.onload = function() {
+        cargarPreguntas();
+    };
+</script>
+
+</body>
+</html>
