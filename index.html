@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Diario de un viaje imposible - Experiencia Interactiva</title>
+    <script>
+        (function () {
+            var t = null;
+            try { t = localStorage.getItem('theme-pref'); } catch (e) {}
+            if (t !== 'dark' && t !== 'light') {
+                t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #2a1a10;
+            --ink-soft: #5a4636;
+            --brown-900: #24140b;
+            --brown-800: #3a2213;
+            --brown-700: #55341d;
+            --brown-500: #8c5a32;
+            --gold: #c9a24a;
+            --gold-light: #e8cf8a;
+            --gold-deep: #9c7a2a;
+            --parchment: #f6efe2;
+            --parchment-dark: #ece1cc;
+            --paper: #fffcf6;
+            --line: #e3d6bd;
+            --radius: 14px;
+            --shadow-sm: 0 2px 6px rgba(58,34,19,.08);
+            --shadow-md: 0 10px 28px -8px rgba(58,34,19,.22);
+            --shadow-lg: 0 22px 48px -14px rgba(36,20,11,.35);
+            --heading: #3a2213;
+            --heading-2: #55341d;
+            --card: #ffffff;
+            --card-hover: #fdf6e3;
+            --bubble-border: #55341d;
+            --primary-color: var(--heading);
+            --gold-color: var(--gold);
+            color-scheme: light;
+            --font-title: 'Playfair Display', 'Georgia', serif;
+            --font-body: 'Lora', 'Georgia', serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+            --ink: #eadfcb;
+            --ink-soft: #cdbfa6;
+            --parchment: #17100b;
+            --parchment-dark: #2a1d13;
+            --paper: #221710;
+            --line: #4a3522;
+            --card: #2b1e15;
+            --card-hover: #38281b;
+            --heading: #f0dca8;
+            --heading-2: #e0bf72;
+            --bubble-border: #c9a24a;
+            --shadow-sm: 0 2px 6px rgba(0,0,0,.35);
+            --shadow-md: 0 10px 28px -8px rgba(0,0,0,.6);
+            --shadow-lg: 0 22px 48px -14px rgba(0,0,0,.75);
+            color-scheme: dark;
+            }
+        }
+        :root[data-theme="dark"] {
+            --ink: #eadfcb;
+            --ink-soft: #cdbfa6;
+            --parchment: #17100b;
+            --parchment-dark: #2a1d13;
+            --paper: #221710;
+            --line: #4a3522;
+            --card: #2b1e15;
+            --card-hover: #38281b;
+            --heading: #f0dca8;
+            --heading-2: #e0bf72;
+            --bubble-border: #c9a24a;
+            --shadow-sm: 0 2px 6px rgba(0,0,0,.35);
+            --shadow-md: 0 10px 28px -8px rgba(0,0,0,.6);
+            --shadow-lg: 0 22px 48px -14px rgba(0,0,0,.75);
+            color-scheme: dark;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.75;
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: var(--parchment);
+            background-image:
+                radial-gradient(1200px 500px at 50% -100px, rgba(201,162,74,.18), transparent 70%),
+                radial-gradient(circle at 20% 30%, rgba(140,90,50,.05) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(140,90,50,.05) 0, transparent 40%);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        ::selection { background: var(--gold-light); color: var(--brown-900); }
+
+        /* ---------- ENCABEZADO ---------- */
+        header {
+            position: relative;
+            color: #fff;
+            padding: 70px 24px 62px;
+            text-align: center;
+            overflow: hidden;
+            background:
+                radial-gradient(700px 300px at 50% 0%, rgba(201,162,74,.28), transparent 70%),
+                linear-gradient(160deg, var(--brown-900) 0%, var(--brown-800) 55%, #4a2a16 100%);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: .07;
+            background-image:
+                repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 22px),
+                repeating-linear-gradient(-45deg, #fff 0 1px, transparent 1px 22px);
+            pointer-events: none;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+        }
+
+        header h1 {
+            position: relative;
+            margin: 0;
+            font-family: var(--font-title);
+            font-weight: 800;
+            font-size: clamp(2.1rem, 5.5vw, 3.8rem);
+            line-height: 1.12;
+            letter-spacing: .5px;
+            background: linear-gradient(180deg, #fff 30%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 24px rgba(0,0,0,.25);
+        }
+
+        header h1::after {
+            content: '';
+            display: block;
+            width: 90px;
+            height: 3px;
+            margin: 22px auto 0;
+            border-radius: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        header p {
+            position: relative;
+            margin: 18px auto 0;
+            max-width: 680px;
+            font-style: italic;
+            font-size: clamp(1rem, 2.2vw, 1.2rem);
+            color: var(--gold-light);
+            opacity: .95;
+        }
+
+        /* ---------- NAVEGACIÓN ---------- */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 14px;
+            background: rgba(36,20,11,.94);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(201,162,74,.35);
+            box-shadow: 0 8px 24px -8px rgba(0,0,0,.45);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        nav::-webkit-scrollbar { display: none; }
+
+        nav button {
+            flex: 0 0 auto;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #e9dcc3;
+            padding: 9px 16px;
+            font-size: .88rem;
+            font-family: var(--font-body);
+            font-weight: 500;
+            letter-spacing: .2px;
+            white-space: nowrap;
+            cursor: pointer;
+            border-radius: 999px;
+            transition: all .25s ease;
+            outline: none;
+        }
+
+        nav button:hover {
+            color: #fff;
+            background: rgba(201,162,74,.16);
+            border-color: rgba(201,162,74,.4);
+        }
+
+        nav button:focus-visible { box-shadow: 0 0 0 2px var(--gold); }
+
+        nav button.active {
+            color: var(--brown-900);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            border-color: var(--gold);
+            box-shadow: 0 4px 14px -4px rgba(201,162,74,.7);
+        }
+
+        @media (min-width: 1100px) { nav { flex-wrap: wrap; } }
+
+        /* ---------- CONTENEDOR Y TÍTULOS ---------- */
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 44px 22px 70px;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            0%   { opacity: 0; transform: translateY(18px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content { display: none; opacity: 0; }
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp .55s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        h2 {
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+            line-height: 1.25;
+            color: var(--heading);
+            text-align: center;
+            margin: 0 0 34px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 50%; bottom: 0;
+            transform: translateX(-50%);
+            width: 110px; height: 12px;
+            background:
+                linear-gradient(90deg, transparent, var(--gold) 45%, transparent 46%, transparent 54%, var(--gold) 55%, transparent) center/100% 2px no-repeat,
+                radial-gradient(circle, var(--gold) 0 4px, transparent 5px) center/12px 12px no-repeat;
+        }
+
+        h3 {
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 1.35rem;
+            line-height: 1.3;
+            color: var(--heading-2);
+            margin: 0 0 12px;
+        }
+
+        .info-card h2 { text-align: left; padding-bottom: 12px; margin-bottom: 18px; }
+        .info-card h2::after { left: 0; transform: none; }
+
+        p { margin: 0 0 14px; }
+        p:last-child { margin-bottom: 0; }
+        p strong { color: var(--heading); }
+        em { color: var(--heading-2); }
+
+        /* ---------- TARJETAS ---------- */
+        .info-card {
+            position: relative;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, var(--gold-light), var(--gold-deep));
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--gold);
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1.9fr;
+            gap: 34px;
+            align-items: center;
+        }
+
+        @media (max-width: 760px) {
+            .grid-2col { grid-template-columns: 1fr; gap: 22px; }
+            .info-card { padding: 24px 20px 24px 24px; }
+        }
+
+        .img-box { width: 100%; text-align: center; }
+
+        .img-box img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid var(--gold-deep);
+            outline: 6px solid var(--paper);
+            outline-offset: -7px;
+            box-shadow: var(--shadow-md);
+            background-color: var(--parchment-dark);
+            transition: transform .5s ease;
+        }
+
+        .info-card:hover .img-box img { transform: scale(1.02); }
+
+        /* ---------- PERSONAJES ---------- */
+        .bio-card {
+            position: relative;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 26px 28px;
+            margin-bottom: 22px;
+            border-radius: var(--radius);
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+        }
+
+        .bio-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px; bottom: 14px;
+            width: 5px;
+            border-radius: 0 5px 5px 0;
+            background: linear-gradient(180deg, var(--gold-light), var(--gold-deep));
+        }
+
+        .bio-card:hover {
+            transform: translateX(6px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--gold);
+        }
+
+        .bio-card img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            outline: 5px solid var(--paper);
+            outline-offset: -9px;
+            flex-shrink: 0;
+            box-shadow: 0 8px 18px -4px rgba(58,34,19,.35);
+            background-color: var(--parchment-dark);
+        }
+
+        @media (max-width: 600px) {
+            .bio-card { flex-direction: column; text-align: center; gap: 18px; padding: 24px 20px; }
+            .bio-card:hover { transform: translateY(-3px); }
+            .bio-card::before { display: none; }
+        }
+
+        /* ---------- CRONOLOGÍA ---------- */
+        .timeline {
+            position: relative;
+            padding: 10px 0 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 6px; bottom: 6px;
+            left: 17px;
+            width: 3px;
+            border-radius: 3px;
+            background: linear-gradient(180deg, var(--gold-light), var(--gold-deep) 60%, var(--gold-light));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px 24px 22px 62px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item:hover { transform: translateX(5px); box-shadow: var(--shadow-md); }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 6px; top: 26px;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: var(--brown-800);
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 0 5px var(--paper);
+        }
+
+        .timeline-date {
+            display: inline-block;
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--brown-900);
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            padding: 3px 16px;
+            border-radius: 999px;
+            margin-bottom: 8px;
+            box-shadow: 0 3px 8px -2px rgba(201,162,74,.6);
+        }
+
+        .timeline-img {
+            display: block;
+            max-width: 260px;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid var(--gold);
+            margin: 10px 0 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 600px) {
+            .timeline-item { padding: 18px 16px 18px 50px; }
+            .timeline-img { max-width: 100%; }
+        }
+
+        /* ---------- GLOSARIO / CULTURA / COMIDAS ---------- */
+        .glossary-grid, .culture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 24px;
+        }
+
+        .glossary-item {
+            position: relative;
+            background: var(--card);
+            border: 1px solid var(--line);
+            padding: 22px 22px 20px;
+            border-radius: 12px;
+            border-top: 4px solid var(--gold);
+            box-shadow: var(--shadow-sm);
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+
+        .glossary-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+
+        .glossary-item h4 {
+            margin: 0 0 10px;
+            font-family: var(--font-title);
+            color: var(--heading-2);
+            font-size: 1.25rem;
+        }
+
+        .glossary-item p { font-size: .96rem; }
+
+        .food-card, .culture-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+        }
+
+        .food-card:hover, .culture-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--gold);
+        }
+
+        .food-card img, .culture-card img {
+            display: block;
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            border-bottom: 3px solid var(--gold);
+            background-color: var(--parchment-dark);
+            transition: transform .6s ease;
+        }
+
+        .food-card, .culture-card { position: relative; }
+        .food-card:hover img, .culture-card:hover img { transform: scale(1.06); }
+
+        .food-card > img, .culture-card > img { transform-origin: center; }
+
+        .food-card-body, .culture-card-body {
+            padding: 18px 20px 22px;
+            position: relative;
+            background: var(--card);
+            flex: 1;
+        }
+
+        .food-card-body h4, .culture-card-body h4 {
+            margin: 0 0 8px;
+            font-family: var(--font-title);
+            color: var(--heading-2);
+            font-size: 1.3rem;
+        }
+
+        .food-card-body p, .culture-card-body p { font-size: .96rem; }
+
+        .food-card, .culture-card { overflow: hidden; }
+
+        /* ---------- VISORES 360 ---------- */
+        .iframe-360-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            margin-top: 18px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+            box-shadow: var(--shadow-lg);
+            background-color: #111;
+        }
+
+        .iframe-360-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        /* ---------- CHAT INTERACTIVO ---------- */
+        .chat-container {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .chat-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 24px; right: 24px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(90deg, var(--gold-light), var(--gold), var(--gold-light));
+        }
+
+        .selector-personaje {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 28px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .selector-personaje button {
+            padding: 10px 20px;
+            border: 1.5px solid var(--brown-500);
+            background: var(--card);
+            color: var(--heading-2);
+            cursor: pointer;
+            border-radius: 999px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: .95rem;
+            transition: all .25s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .selector-personaje button:hover {
+            transform: translateY(-2px);
+            border-color: var(--gold-deep);
+            box-shadow: var(--shadow-md);
+        }
+
+        .selector-personaje button.selected {
+            background: linear-gradient(135deg, var(--brown-800), var(--brown-700));
+            color: var(--gold-light);
+            border-color: var(--brown-800);
+            box-shadow: 0 8px 18px -6px rgba(58,34,19,.55);
+        }
+
+        .chat-escenario {
+            display: flex;
+            align-items: flex-start;
+            gap: 32px;
+            margin-bottom: 32px;
+            background:
+                radial-gradient(500px 200px at 0% 0%, rgba(201,162,74,.14), transparent 70%),
+                var(--parchment);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            min-height: 230px;
+        }
+
+        @media (max-width: 650px) {
+            .chat-escenario { flex-direction: column; align-items: center; gap: 28px; padding: 22px 16px; }
+            .chat-container { padding: 24px 16px; }
+        }
+
+        .personaje-avatar-box { text-align: center; flex-shrink: 0; }
+
+        .personaje-avatar-box img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid var(--gold);
+            outline: 6px solid var(--paper);
+            outline-offset: -11px;
+            box-shadow: var(--shadow-lg);
+            background-color: var(--parchment-dark);
+            transition: transform .3s ease;
+        }
+
+        .personaje-nombre {
+            margin-top: 14px;
+            font-family: var(--font-title);
+            font-weight: 700;
+            color: var(--heading);
+            font-size: 1.2rem;
+        }
+
+        .globito-texto {
+            position: relative;
+            background: var(--card);
+            border: 2px solid var(--bubble-border);
+            border-radius: 20px;
+            padding: 24px 28px;
+            flex-grow: 1;
+            box-shadow: var(--shadow-md);
+            min-height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .globito-texto::before {
+            content: '';
+            position: absolute;
+            left: -18px; top: 38px;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 11px 18px 11px 0;
+            border-color: transparent var(--bubble-border) transparent transparent;
+        }
+
+        .globito-texto::after {
+            content: '';
+            position: absolute;
+            left: -14px; top: 39px;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 10px 15px 10px 0;
+            border-color: transparent var(--card) transparent transparent;
+        }
+
+        @media (max-width: 650px) {
+            .globito-texto { width: 100%; }
+            .globito-texto::before {
+                left: 50%; top: -18px;
+                transform: translateX(-50%);
+                border-width: 0 11px 18px 11px;
+                border-color: transparent transparent var(--bubble-border) transparent;
+            }
+            .globito-texto::after {
+                left: 50%; top: -14px;
+                transform: translateX(-50%);
+                border-width: 0 10px 15px 10px;
+                border-color: transparent transparent var(--card) transparent;
+            }
+        }
+
+        .globito-pregunta {
+            font-size: .82rem;
+            color: var(--gold-deep);
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .globito-respuesta {
+            font-size: 1.1rem;
+            line-height: 1.65;
+            color: var(--ink);
+        }
+
+        .animar-globito { animation: popIn .35s cubic-bezier(.175,.885,.32,1.275); }
+
+        @keyframes popIn {
+            0%   { opacity: 0; transform: scale(.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .panel-preguntas-titulo {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--heading);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .opciones-preguntas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .opciones-preguntas button {
+            text-align: left;
+            padding: 15px 18px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--brown-500);
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: .98rem;
+            line-height: 1.5;
+            color: var(--ink);
+            transition: all .25s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .opciones-preguntas button:hover {
+            background: var(--card-hover);
+            border-left-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ---------- JUEGO ---------- */
+        .juego-wrap {
+            position: relative;
+            width: 100%;
+            height: min(78vh, 680px);
+            min-height: 420px;
+            background: #050302;
+            border: 3px solid var(--gold);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg), 0 0 0 8px rgba(201,162,74,.12);
+        }
+        .juego-wrap iframe { position: relative; z-index: 1; width: 100%; height: 100%; border: 0; display: block; }
+        .juego-fs {
+            position: absolute; bottom: 12px; left: 12px; z-index: 5;
+            padding: 7px 14px; border-radius: 999px; cursor: pointer;
+            border: 1px solid var(--gold); background: rgba(20,10,4,.78);
+            color: var(--gold-light); font-family: var(--font-body); font-size: .85rem; font-weight: 700;
+            backdrop-filter: blur(6px);
+            transition: all .25s ease;
+        }
+        .juego-fs:hover { background: var(--gold); color: var(--brown-900); }
+        .juego-placeholder {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: var(--gold-light); font-weight: 700; pointer-events: none;
+        }
+
+
+        /* ---------- SWITCH MODO CLARO / OSCURO ---------- */
+        .theme-switch {
+            position: fixed;
+            right: 16px;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px 8px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--gold);
+            background: rgba(36,20,11,.92);
+            color: var(--gold-light);
+            font-family: var(--font-body);
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .theme-switch:hover { transform: translateY(-2px); }
+        .theme-switch:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+
+        .theme-switch .track {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #f6d98a, #e0a93c);
+            transition: background .3s ease;
+            flex-shrink: 0;
+        }
+        .theme-switch .thumb {
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+            line-height: 1;
+            box-shadow: 0 2px 6px rgba(0,0,0,.35);
+            transition: transform .3s cubic-bezier(.4,0,.2,1);
+        }
+        .theme-switch .thumb::before { content: '\2600\FE0F'; }
+        .theme-switch[aria-checked="true"] .track { background: linear-gradient(135deg, #3b3f6b, #1b1d3a); }
+        .theme-switch[aria-checked="true"] .thumb { transform: translateX(24px); }
+        .theme-switch[aria-checked="true"] .thumb::before { content: '\1F319'; }
+
+        @media (max-width: 520px) {
+            .theme-switch .lbl { display: none; }
+            .theme-switch { padding: 8px; }
+        }
+
+        /* ---------- PIE Y DETALLES ---------- */
+        .container::after {
+            content: '';
+            display: block;
+            width: 140px; height: 3px;
+            margin: 50px auto 0;
+            border-radius: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<button type="button" id="themeSwitch" class="theme-switch" role="switch" aria-checked="false" aria-label="Cambiar entre modo claro y modo oscuro">
+    <span class="track"><span class="thumb"></span></span>
+    <span class="lbl" id="themeLabel">Modo claro</span>
+</button>
+
+<header>
+    <h1>Diario de un viaje imposible</h1>
+    <p>Guía interactiva & Análisis de la obra de Lucía Laragione y Ana María Shua</p>
+</header>
+
+<nav>
+    <button class="active" onclick="switchTab('libro', event)">📖 El Libro</button>
+    <button onclick="switchTab('resumen', event)">📜 Resumen Extendido</button>
+    <button onclick="switchTab('cultura', event)">🏛 Cultura Colonial</button>
+    <button onclick="switchTab('cronologia', event)">⏳ Cronología de 1810</button>
+    <button onclick="switchTab('personajes', event)">👥 Personajes</button>
+    <button onclick="switchTab('glosario', event)">📚 Glosario</button>
+    <button onclick="switchTab('analisis', event)">💡 Temas y Análisis</button>
+    <button onclick="switchTab('vista360', event)">🌐 Recorrido 360°</button>
+    <button onclick="switchTab('interactivo', event)">💬 Chat Interactivo</button>
+    <button onclick="switchTab('juego', event)">🏃 Escapa de Remigia</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECCIÓN EL LIBRO -->
+    <div id="tab-libro" class="tab-content active">
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/k5N3swRD/IMG-3096.webp" alt="Portada del libro Diario de un viaje imposible">
+            </div>
+            <div>
+                <h2>Ficha Técnica y Marco Literario</h2>
+                <p><strong>Título:</strong> Diario de un viaje imposible</p>
+                <p><strong>Autoras:</strong> Lucía Laragione y Ana María Shua</p>
+                <p><strong>Ilustraciones:</strong> Carlus Rodríguez</p>
+                <p><strong>Editorial:</strong> Alfaguara / Altea (Serie Azul)</p>
+                <p><strong>Género:</strong> Novela histórica juvenil / Ciencia ficción / Viaje en el tiempo</p>
+
+                <h3>Argumento General</h3>
+                <p>La novela entrelaza la literatura de viajes en el tiempo con la reconstrucción detallada e histórica de la Revolución de Mayo de 1810 en el Virreinato del Río de la Plata. La trama contrapone el estilo de vida lleno de tecnología de un chico contemporáneo con la sociedad colonial porteña, creando una mirada ágil, entretenida y muy educativa sobre la libertad, las costumbres y la formación de la identidad nacional.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN RESUMEN EXTENDIDO -->
+    <div id="tab-resumen" class="tab-content">
+        <h2>Resumen Extendido y Detallado de la Obra</h2>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/k5N3swRD/IMG-3096.webp" alt="Emanuel y el experimento del Tío Francis">
+            </div>
+            <div>
+                <h3>1. El Experimento y el Salto Temporal</h3>
+                <p>Emanuel Rizzo, un chico de 12 años del siglo XXI apasionado por la tecnología, acepta probar el prototipo secreto de máquina del tiempo diseñado por su excéntrico tío Francis. La máquina —un cajón especial que solo soporta un límite de 44 kilos y funciona con condensadores electromagnéticos solares— proyecta a Emanuel al pasado. Tras un destello cegador, Emanuel despierta en abril de 1810 en el depósito de carretas de la casona de Don Blas de Ulloa, un hombre culto y respetado en la Buenos Aires colonial.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/6qFr5Ljs/Whats-App-Image-2026-09-30-at-21-27-56.jpg" alt="Emanuel y Margarita en la casa colonial">
+            </div>
+            <div>
+                <h3>2. La Identidad Falsa y el Desafío de Margarita</h3>
+                <p>Para encajar en la época sin despertar pánico ni denuncias por hechicería, Don Blas acoge al niño bajo el seudónimo de "Manuelito de los Rizos", justificando que es un pariente criollo venido de Europa. Sin embargo, Margarita, la perspicaz nieta de Don Blas de 12 años, nota de inmediato irregularidades: la ropa con cierres metálicos y suelas de goma, el uso de palabras extrañas como "ok" o "celular", y el manejo de un artefacto brillante con luz propia (el smartphone). A pesar de las excusas, Margarita lo descubre y Emanuel debe revelarle la verdad sobre su origen futuro.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/9fP5b1w1/IMG-3097.jpg" alt="Reuniones secretas de la Jabonería de Vieytes">
+            </div>
+            <div>
+                <h3>3. La Conspiración Libertaria en la Jabonería de Vieytes</h3>
+                <p>Integrado a la vida de la casa, Emanuel presencia la tensión política del Virreinato. Don Blas lo lleva a las reuniones clandestinas en la Jabonería de Vieytes y en la Quinta de Orma. Allí escucha debatir a próceres como Manuel Belgrano, Cornelio Saavedra, Juan José Castelli y Nicolás Rodríguez Peña. Gracias a las clases de historia de su colegio, Emanuel les adelanta en secreto la confirmación de que la Junta Central de Sevilla ha caído en España por el avance de Napoleón Bonaparte, mucho antes de que los informes marítimos oficiales lleguen al puerto de Buenos Aires.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/tgdQkDnV/IMG-3098.jpg" alt="Acontecimientos de la Semana de Mayo">
+            </div>
+            <div>
+                <h3>4. El Clímax de la Semana de Mayo y el Cabildo Abierto</h3>
+                <p>La noticia confirmada por el buque inglés <em>HMS Mistletoe</em> desata la crisis del 18 de mayo. Mientras el virrey Cisneros intenta mantener la calma, la 'Legión Infernal' liderada por French y Beruti exige la convocatoria inmediata a un Cabildo Abierto. Emanuel graba audios escondido en su teléfono durante los acontecimientos del 22 de mayo, observando los acalorados debates donde prevalece el argumento de Castelli sobre la soberanía popular. Finalmente, el 25 de mayo de 1810 se constituye la Primera Junta de Gobierno Patrio encabezada por Cornelio Saavedra.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg" alt="El regreso de Emanuel al siglo XXI">
+            </div>
+            <div>
+                <h3>5. La Despedida y el Regreso al Futuro</h3>
+                <p>Una vez completada la gesta patriótica y habiéndose recargado los condensadores solares del artefacto temporal, llega el momento de la partida. En una conmovedora despedida con Don Blas y con Margarita —quien guarda el secreto del futuro como un preciado tesoro de libertad—, Emanuel aborda la máquina del tiempo y retorna a su época. Vuelve cambiado, valorando las comodidades tecnológicas de hoy pero comprendiendo el valor sagrado del coraje y la libertad que fundaron la nación.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CULTURA Y COSTUMBRES COLONIALES -->
+    <div id="tab-cultura" class="tab-content">
+        <h2>Cultura, Costumbres y Vida Cotidiana en 1810</h2>
+
+        <div class="info-card">
+            <h3>Costumbres y Estilo de Vida Cotidiano</h3>
+            <p>La sociedad de la Buenos Aires colonial estaba fuertemente estratificada y marcada por los ritmos del sol y la fe religiosa. Las familias acomodadas realizaban su vida social en torno al patio central de las casonas. La iluminación era escasa, basada en velas de sebo que despedían humo y olor fuerte, o lámparas de aceite. El agua corriente no existía: se consumía agua de lluvia recogida en aljibes o la que vendía el <strong>aguatero</strong> traída desde el río.</p>
+            <p>Los pregones marcaban el ritmo de las mañanas: vendedores ambulantes anunciaban la leche, las velas, el pescado, las escobas y las pasteles con versos rítmicos que se oían desde las ventanas.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Entretenimiento y Recreación</h3>
+            <p>A falta de teatros modernos o medios de comunicación masivos, la diversión colonial variaba según la clase social:</p>
+            
+            <div class="culture-grid" style="margin-top: 15px;">
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/90fNZH76/paseo.jpg" alt="Paseo por la Alameda">
+                    <div class="culture-card-body">
+                        <h4>Los Paseos por la Alameda</h4>
+                        <p>Las caminatas junto al Río de la Plata por las tardes eran el espacio favorito para lucir las vestimentas, conversar y entablar vínculos sociales.</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/8cCnMgvQ/puulperia.jpg" alt="La Pulpería Colonial">
+                    <div class="culture-card-body">
+                        <h4>Las Pulperías</h4>
+                        <p>Punto de encuentro de las clases populares, gauchos y sirvientes. Allí se bebía aguardiente, se jugaba a las cartas, se enteraban de las novedades y disputaban payadas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>Deportes y Juegos de la Época</h3>
+            <p>Los deportes coloniales eran de gran destreza criolla y entusiasmo popular:</p>
+            
+            <div class="culture-grid" style="margin-top: 15px;">
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/90fNZH78/juego-de-la-sorrtiga.jpg" alt="Juego de la Sortija">
+                    <div class="culture-card-body">
+                        <h4>Juego de la Sortija</h4>
+                        <p>Jinetes al galope debían ensartar con un pequeño palillo de madera un aro de metal colgado de un arco.</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/mkr6CWHJ/juego-del-pato.jpg" alt="Juego del Pato">
+                    <div class="culture-card-body">
+                        <h4>Juego del Pato</h4>
+                        <p>Deporte hípico violento donde los jinetes competían por una pelota de cuero con asas a toda velocidad por el campo.</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/d30SrcyX/naipes.jpg" alt="Juegos de Naipes">
+                    <div class="culture-card-body">
+                        <h4>Naipes y Taba</h4>
+                        <p>En las pulperías se jugaba intensamente al truco, al monte y a la taba (lanzamiento del hueso astrágalo del vacuno).</p>
+                    </div>
+                </div>
+
+                <div class="culture-card">
+                    <img src="https://i.postimg.cc/KzTtWqhW/descarga.jpg" alt="Riñas de Gallos">
+                    <div class="culture-card-body">
+                        <h4>Riñas de Gallos</h4>
+                        <p>Desafíos populares muy concurridos donde se apostaba sobre el combate de aves en ruedos o reñideros.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--gold-color); padding-bottom: 8px; margin-top: 35px;">(Comidas)</h2>
+        <p>Platos típicos, guisos tradicionales y repostería que constituían la gastronomía colonial del Río de la Plata:</p>
+
+        <div class="glossary-grid" style="margin-top: 20px;">
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/hPXKRH5T/locro.jpg" alt="Locro Criollo">
+                <div class="food-card-body">
+                    <h4>Locro</h4>
+                    <p>Guiso suculento de origen prehispánico a base de maíz blanco, porotos, zapallo, falda vacuna, patitas de cerdo y chorizo colorado, sazonado con salsa picante de cebolla y ají (quiquirimichi).</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/NfKQvWzT/descarga-(1).jpg" alt="Carbonada Colonial">
+                <div class="food-card-body">
+                    <h4>Carbonada</h4>
+                    <p>Guiso tradicional servido tradicionalmente dentro de un zapallo grande ahuecado y horneado. Llevaba carne cortada en trozos, choclo, papas, batatas, orejones de durazno y trozos de manzana.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/CLRwpWQb/Empanadas-Criollas.jpg" alt="Empanadas Criollas">
+                <div class="food-card-body">
+                    <h4>Empanadas Criollas</h4>
+                    <p>Masa casera rellena de carne picada a cuchillo, cebolla, huevo duro, aceitunas y comino. Se cocinaban fritas en grasa de pella hirviendo o en hornos de barro de las casonas.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/kX27PkpS/comida.jpg" alt="Puchero de la Época">
+                <div class="food-card-body">
+                    <h4>Puchero</h4>
+                    <p>Comida diaria muy habitual. Hervido de cortes de carne vacuna con hueso, choclos, zapallo, batatas, repollo y chorizos, servido en grandes fuentes centrales.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/GhC6q61C/humita.jpg" alt="Humita en Chala">
+                <div class="food-card-body">
+                    <h4>Humita en Chala</h4>
+                    <p>Pasta suave de choclo dulce rallado, cebolla, pimentón y queso, envuelta en las propias hojas secas (chalas) del choclo y hervida en atados retorcidos.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/SNhHDHp4/mazamorra.jpg" alt="Mazamorra Colonial">
+                <div class="food-card-body">
+                    <h4>Mazamorra</h4>
+                    <p>El postre más popular de la época. Elaborado con maíz blanco hervido en agua con ceniza limpia o leche, aromatizado con vainilla o canela. Se consumía frío o caliente con miel.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/Kv2CJCyy/pastelitos.jpg" alt="Pastelitos Criollos">
+                <div class="food-card-body">
+                    <h4>Pastelitos Criollos</h4>
+                    <p>Masa crujiente y hojaldrada frita en grasa, con forma de estrellita o pañuelo, rellena de dulce de membrillo o batata, bañada con almíbar tibio y granas de colores.</p>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="https://i.postimg.cc/PfZBbT0f/Gemini-Generated-Image-bnsx8xbnsx8xbnsx.jpg" alt="Mate y Chocolate Caliente">
+                <div class="food-card-body">
+                    <h4>Chocolate Caliente y Mate</h4>
+                    <p>El mate (amargo o dulce con cascarita de naranja) era la infusión transversal a todas las clases. El chocolate caliente con canela o especias era la bebida distinguida de las tertulias urbanas.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SECCIÓN CRONOLOGÍA HISTÓRICA -->
+    <div id="tab-cronologia" class="tab-content">
+        <h2>La Semana de Mayo de 1810 en la Novela</h2>
+        <div class="info-card">
+            <ul class="timeline">
+                <li class="timeline-item">
+                    <span class="timeline-date">18 de Mayo</span>
+                    <img src="https://i.postimg.cc/7hQtNt3j/Retrato-del-teniente-general-de-la-Armada-Baltasar-Hidalgo-de-Cisneros-(1756-1829)-Ano-nimo.jpg" alt="18 de mayo - Virrey Cisneros" class="timeline-img">
+                    <p>El virrey Cisneros publica la proclama oficial pidiendo calma tras la confirmación de la caída de la Junta de Sevilla en España.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">19 y 20 de Mayo</span>
+                    <img src="https://i.postimg.cc/9fP5b1w1/IMG-3097.jpg" alt="19 y 20 de mayo - Reuniones secretas" class="timeline-img">
+                    <p>Los patriotas se reúnen en la Jabonería de Vieytes y en la quinta de Orma. Saavedra y Belgrano solicitan formalmente al Cabildo el permiso para convocar a una asamblea pública.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">21 de Mayo</span>
+                    <img src="https://i.postimg.cc/8cCnMg6m/a.jpg" alt="21 de mayo - Legion Infernal" class="timeline-img">
+                    <p>Ocurre la "Plaza de la Frontera": la Legión Infernal liderada por French y Beruti presiona al Cabildo para obtener la autorización del Cabildo Abierto.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">22 de Mayo</span>
+                    <img src="https://i.postimg.cc/BbvwHfKR/f.jpg" alt="22 de mayo - Cabildo Abierto" class="timeline-img">
+                    <p>Se realiza el Cabildo Abierto con 251 vecinos. Tras acalorados debates jurídicos (destacándose Castelli y Paso), se vota la destitución del Virrey.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-date">25 de Mayo</span>
+                    <img src="https://i.postimg.cc/pVDd6N3V/g.jpg" alt="25 de mayo - Primera Junta" class="timeline-img">
+                    <p>Se conforma la Primera Junta de Gobierno Patrio, presidida por Cornelio Saavedra, marcando el inicio formal de la autonomía argentina.</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECCIÓN BIOGRAFÍAS DE PERSONAJES -->
+    <div id="tab-personajes" class="tab-content">
+        <h2>Personajes Principales y Protagonistas</h2>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg" alt="Emanuel Rizzo">
+            <div>
+                <h3>Emanuel Rizzo ("Manuelito de los Rizos")</h3>
+                <p>Chico de 12 años del siglo XXI. De temperamento curioso e ingenioso. Registra sus observaciones en la grabadora de su teléfono móvil mientras busca adaptar sus modales al siglo XIX sin ser descubierto.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/Bv59pNPM/IMG-3107.jpg" alt="Margarita de Ulloa">
+            <div>
+                <h3>Margarita de Ulloa</h3>
+                <p>Joven porteña de 12 años, nieta de Don Blas. Culta, perspicaz e independiente. Cuestiona el rol asignado a la mujer en la colonia y es la primera en descubrir el enigma de Emanuel.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/wxQ3f8sJ/IMG-3110.jpg" alt="Don Blas de Ulloa">
+            <div>
+                <h3>Don Blas de Ulloa</h3>
+                <p>Anfitrión de Emanuel y erudito local. Hombre librepensador, patriota de convicción y tutor afectuoso que integra al joven en las discusiones revolucionarias.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/tgdQkDnV/IMG-3098.jpg" alt="Manuel Belgrano">
+            <div>
+                <h3>Manuel Belgrano</h3>
+                <p>Abogado, intelectual y prócer criollo. Promotor central de las ideas ilustradas, la educación pública y la reorganización política del Río de la Plata.</p>
+            </div>
+        </div>
+
+        <div class="bio-card">
+            <img src="https://i.postimg.cc/hG8WsMQQ/IMG-3099.jpg" alt="Cornelio Saavedra">
+            <div>
+                <h3>Cornelio Saavedra</h3>
+                <p>Comandante del Regimiento de Patricios. Líder militar prudente cuya posición definió el éxito de la destitución del Virrey.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN GLOSARIO COLONIAL -->
+    <div id="tab-glosario" class="tab-content">
+        <h2>Glosario de Términos Históricos de 1810</h2>
+        <div class="info-card">
+            <div class="glossary-grid">
+                <div class="glossary-item">
+                    <h4>Tertulia</h4>
+                    <p>Reunión social habitual en las casas acomodadas donde se conversaba de política, se escuchaba música y se debatían asuntos de actualidad.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Jabonería de Vieytes</h4>
+                    <p>Fábrica de jabón de Hipólito Vieytes y Nicolás Rodríguez Peña usada como fachada para las reuniones secretas de los patriotas.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Cabildo Abierto</h4>
+                    <p>Asamblea extraordinaria convocada en situaciones de emergencia para consultar la opinión de los "vecinos principales" de la ciudad.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Gaceta</h4>
+                    <p>Publicación impresa periódica de la época que difundía noticias políticas, decretos e informes internacionales.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Pregón</h4>
+                    <p>Anuncio o canto en voz alta con el que los vendedores ambulantes anunciaban sus productos por las calles de la ciudad.</p>
+                </div>
+                <div class="glossary-item">
+                    <h4>Aljibe</h4>
+                    <p>Pozo o depósito subterráneo que recolectaba y almacenaba el agua de lluvia en los patios interiores de las casonas coloniales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN TEMAS Y ANÁLISIS -->
+    <div id="tab-analisis" class="tab-content">
+        <h2>Análisis Temático, Cosmovisión y Perspectivas Literarias</h2>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/T3grnS7J/1.jpg" alt="1. El Choque Cultural y Temporal">
+            </div>
+            <div>
+                <h3>1. El Choque Cultural y Temporal</h3>
+                <p>La obra contrapone las comodidades del siglo XXI (luz eléctrica, teléfonos móviles, inmediatez) con la austeridad y costumbres de 1810. Muestra cómo los avances tecnológicos no reemplazan los valores humanos fundamentales como el coraje y la solidaridad. Emanuel descubre que, sin Wi-Fi ni electricidad, las personas de 1810 tenían una vida rica en diálogo, lectura y compromiso social.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/7YC1Zbgv/2.jpg" alt="2. El Rol de la Mujer en la Colonia y el Pensamiento de Margarita">
+            </div>
+            <div>
+                <h3>2. El Rol de la Mujer en la Colonia y el Pensamiento de Margarita</h3>
+                <p>A través del personaje de Margarita, la novela visibiliza el pensamiento y las limitaciones impuestas a las mujeres en la época colonial. Frente a una sociedad patriarcal que las relegaba al espacio doméstico, al bordado y a la fe, Margarita encarna el espíritu ilustrado de avance: cuestiona las prohibiciones universitarias, lee filosofía a escondidas y reclama activamente un rol en las decisiones políticas del país.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/SNw62qrK/3.jpg" alt="3. La Construcción de la Patria como Proceso Vivo">
+            </div>
+            <div>
+                <h3>3. La Construcción de la Patria como Proceso Vivo</h3>
+                <p>Se aborda la Revolución de Mayo no como un hecho estático o congelado de manual escolar, sino como un proceso lleno de tensiones, dudas, alianzas estratégicas y valentía colectiva. La novela humaniza la gesta patriótica demostrando que la independencia fue el resultado de debates intensos sobre el destino común y no un acontecimiento espontáneo.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/gkfVXdDJ/4.jpg" alt="4. Las Ideas de la Ilustración y la Cosmovisión de 1810">
+            </div>
+            <div>
+                <h3>4. Las Ideas de la Ilustración y la Cosmovisión de 1810</h3>
+                <p>La narración expone el clima ideológico que impulsó la Revolución. Los intelectuales criollos estaban fuertemente influenciados por las ideas de la Ilustración europea (Rousseau, Montesquieu, Voltaire). La doctrina clave debatida en la Jabonería de Vieytes y en el Cabildo Abierto fue la retroversión de la soberanía al pueblo: al estar cautivo el rey Fernando VII y disuelta la Junta Central de Sevilla, la autoridad del Virrey dejaba de ser legítima y el poder regresaba al pueblo para constituir un gobierno propio.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/VLFHQKcQ/c8e591d2-4f70-4386-9b5f-53fe7e7f230c.jpg" alt="5. El Viaje en el Tiempo como Dispositivo Pedagógico y Literario">
+            </div>
+            <div>
+                <h3>5. El Viaje en el Tiempo como Dispositivo Pedagógico y Literario</h3>
+                <p>Las autoras, Lucía Laragione y Ana María Shua, emplean la ciencia ficción como una poderosa herramienta didáctica. El viaje temporal actúa como un espejo: al colocar a un niño moderno en el pasado, el lector experimenta la Historia de primera mano. Este recurso 'desmitifica' a los próceres, bajándolos del pedestal de bronce para mostrarlos como hombres reales, vulnerables pero guiados por ideales elevados.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/gkfVXdDw/6.jpg" alt="6. Tensiones Sociales, Jerarquías y Diversidad Colonial">
+            </div>
+            <div>
+                <h3>6. Tensiones Sociales, Jerarquías y Diversidad Colonial</h3>
+                <p>La novela no oculta la marcada estratificación social de la Buenos Aires colonial. Muestra la rivalidad entre españoles peninsulares (que ostentaban los cargos de mayor privilegio) y los criollos, así como la situación de los sectores populares, mestizos, indígenas y personas esclavizadas. Se pone de relieve cómo el anhelo de libertad comenzaba a germinar en los distintos sectores sociales, aunque con diferentes expectativas y demandas.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/DwLq1Dj1/7.jpg" alt="7. La Información, el Poder y la Circulación de Noticias">
+            </div>
+            <div>
+                <h3>7. La Información, el Poder y la Circulación de Noticias</h3>
+                <p>Existe un paralelo muy interesante entre el teléfono inteligente de Emanuel (tecnología de acceso instantáneo a la información) y el flujo de noticias en 1810, dependiente de barcos que tardaban meses en cruzar el Atlántico. La obra destaca que la información veraz es el combustible de la libertad: el conocimiento anticipado de la caída de Sevilla fue precisamente el detonante político que obligó a acelerar los planes revolucionarios.</p>
+            </div>
+        </div>
+
+        <div class="info-card grid-2col">
+            <div class="img-box">
+                <img src="https://i.postimg.cc/YCY1QVn3/8.jpg" alt="8. Identidad, Memoria Colectiva y Conciencia Ciudadana">
+            </div>
+            <div>
+                <h3>8. Identidad, Memoria Colectiva y Conciencia Ciudadana</h3>
+                <p>A lo largo de su travesía, Emanuel comprende que la libertad de la que disfruta en el siglo XXI no fue un regalo fortuito, sino la consecuencia directa del coraje y el sacrificio de hombres y mujeres de 1810. La novela concluye con una reflexión sobre la memoria histórica: conocer nuestro pasado es la única vía para construir una ciudadanía consciente, crítica y responsable del futuro de la patria.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN RECORRIDO VIRTUAL 360° -->
+    <div id="tab-vista360" class="tab-content">
+        <h2>Recorrido e Inmersión Virtual 360°</h2>
+        <p style="text-align: center; margin-bottom: 25px;">Haz clic y arrastra el cursor (o desliza la pantalla en dispositivos móviles) dentro de cualquiera de los visores para explorar panorámicamente los distintos escenarios históricos:</p>
+
+        <div class="info-card">
+            <h3>1. Plaza Mayor (de Mayo)</h3>
+            <div class="iframe-360-container">
+                <iframe 
+                    src="https://momento360.com/e/u/cfac6b4618b14889a548c71cf35b5355?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    allowfullscreen 
+                    allow="xr-spatial-tracking">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>2. Jaboneria de Vieytes</h3>
+            <div class="iframe-360-container">
+                <iframe 
+                    src="https://momento360.com/e/u/54d810f4d1084ae09c698ac727b3402c?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    allowfullscreen 
+                    allow="xr-spatial-tracking">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>3. Biblioteca de Don Blas de Ulloa</h3>
+            <div class="iframe-360-container">
+                <iframe 
+                    src="https://momento360.com/e/u/c35356cdbc404d53909839db65ea0955?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    allowfullscreen 
+                    allow="xr-spatial-tracking">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CHAT INTERACTIVO -->
+    <div id="tab-interactivo" class="tab-content">
+        <h2>Entrevistas Interactivas con los Personajes</h2>
+        
+        <div class="chat-container">
+            <!-- Selector de Personajes (5 Opciones) -->
+            <div class="selector-personaje">
+                <button class="selected" onclick="seleccionarPersonaje('emanuel', this)">📱 Emanuel</button>
+                <button onclick="seleccionarPersonaje('margarita', this)">📜 Margarita</button>
+                <button onclick="seleccionarPersonaje('donblas', this)">🖋 Don Blas</button>
+                <button onclick="seleccionarPersonaje('belgrano', this)">🇦🇷 Belgrano</button>
+                <button onclick="seleccionarPersonaje('saavedra', this)">⚔ Saavedra</button>
+            </div>
+
+            <!-- Escenario interactivo: Avatar + Globito blanco de respuesta -->
+            <div class="chat-escenario">
+                <div class="personaje-avatar-box">
+                    <img id="charImg" src="https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg" alt="Personaje">
+                    <div id="charName" class="personaje-nombre">Emanuel Rizzo</div>
+                </div>
+
+                <div class="globito-texto animar-globito" id="globitoBox">
+                    <div id="globitoPregunta" class="globito-pregunta" style="display:none;"></div>
+                    <div id="globitoRespuesta" class="globito-respuesta">
+                        ¡Hola! Soy Emanuel. ¡No vas a creerlo pero viajé a 1810 con un prototipo del tío Francis! Toca una de las preguntas de abajo para conversar conmigo.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de preguntas en la parte inferior -->
+            <div class="panel-preguntas-titulo">Hazle una pregunta al personaje:</div>
+            <div class="opciones-preguntas" id="opcionesPreguntas">
+                <!-- Se cargan dinámicamente según el personaje seleccionado -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN JUEGO: ESCAPA DE REMIGIA -->
+    <div id="tab-juego" class="tab-content">
+        <h2>Escapa de Remigia</h2>
+        <p style="text-align:center; margin-bottom:15px;">Corre por la Buenos Aires de 1810, esquiva carruajes y trenes, salta vallas, desliza bajo los arcos y recoge doblones. ¡Que Remigia no te atrape!</p>
+        <div class="juego-wrap" id="juegoWrap">
+            <button class="juego-fs" onclick="juegoPantallaCompleta()">⛶ Pantalla completa</button>
+            <div class="juego-placeholder">Cargando juego...</div>
+            <iframe id="juegoFrame" title="Escapa de Remigia" allow="fullscreen; autoplay"></iframe>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Modo claro / oscuro
+    (function () {
+        var btn = document.getElementById('themeSwitch');
+        var lbl = document.getElementById('themeLabel');
+        function apply(t, save) {
+            document.documentElement.setAttribute('data-theme', t);
+            btn.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false');
+            lbl.textContent = t === 'dark' ? 'Modo oscuro' : 'Modo claro';
+            if (save) { try { localStorage.setItem('theme-pref', t); } catch (e) {} }
+        }
+        apply(document.documentElement.getAttribute('data-theme') || 'light', false);
+        btn.addEventListener('click', function () {
+            var cur = document.documentElement.getAttribute('data-theme');
+            apply(cur === 'dark' ? 'light' : 'dark', true);
+        });
+    })();
+
+    // Cambio de pestañas
+    function switchTab(tabId, event) {
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(c => c.classList.remove('active'));
+
+        const buttons = document.querySelectorAll('nav button');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        const selectedTab = document.getElementById('tab-' + tabId);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+
+        juegoVisible(tabId === 'juego');
+    }
+
+    // Datos y Lógica del Chat Interactivo con 5 Personajes
+    let personajeActual = 'emanuel';
+
+    const datosChat = {
+        emanuel: {
+            nombre: "Emanuel Rizzo",
+            img: "https://i.postimg.cc/5t5dgpQs/IMG-3108.jpg",
+            saludo: "¡Hola! Soy Emanuel. ¡No vas a creerlo pero viajé a 1810 con un prototipo del tío Francis! Toca una de las preguntas de abajo para conversar conmigo.",
+            preguntas: [
+                {
+                    q: "¿Qué fue lo que más te chocó de vivir en 1810?",
+                    a: "¡Sin duda la falta de Wi-Fi y electricidad! Además, al principio la comida con grasa de pella me costó bastante, pero aprendí a valorar muchísimo el diálogo cara a cara.",
+                    sub: [
+                        {
+                            q: "¿Cómo era la comida y qué tal te cayó?",
+                            a: "Casi todo era sopa y puchero (le dicen «cocido») con muchísima grasa, y como la sal era cara lo condimentaban con ají molido. Encima casi no usaban tenedor. Mi panza sufrió bastante al principio.",
+                            sub: [
+                                {
+                                    q: "¿Qué fue lo peor del agua?",
+                                    a: "Llegaba del río en carros de aguateros, toda barrosa, y había que dejarla decantar en tinajas. En el aljibe tenían hasta una tortuga para que se comiera los bichos. ¡Para mí fue la culpable de mi descompostura!"
+                                },
+                                {
+                                    q: "¿Hubo alguna comida que te encantara?",
+                                    a: "¡Sí! La mulita a las brasas se volvió mi plato favorito de 1810. También me enamoré de los buñuelos con miel de Dorotea, la mazamorra caliente y, por suerte, ya existía el dulce de leche."
+                                },
+                                {
+                                    q: "¿Qué comida del siglo XXI extrañabas?",
+                                    a: "¡Las milanesas! Hasta se me escapó la palabra delante de gente importante. También extrañaba los sánguches de mamá con pan francés y jamón, y la leche con chocolate."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo te las arreglabas sin tecnología?",
+                            a: "Con mucha paciencia y algunos papelones. Me di cuenta de cuántas cosas dependen de la electricidad: no hay heladera, ni calefacción, ni música a pedido. Todo se hace a mano y se compra el día.",
+                            sub: [
+                                {
+                                    q: "¿Qué hiciste cuando te dolió la cabeza?",
+                                    a: "Fui a la cocina a buscar hielo y descubrí que el hielo no existe en Buenos Aires, salvo en pleno invierno. Remigia me preparó un tecito de hierbas que me lo sacó, y después encontré el minibotiquín que me puso Francis en la mochila."
+                                },
+                                {
+                                    q: "¿Cómo era ir al baño en 1810?",
+                                    a: "Un desafío. Se llama «el común» y es un cuartito de madera en el fondo de la huerta, con lavandas y limoneros alrededor para disimular el olor del pozo. De noche se usan orinales, así que salir con frío era toda una expedición."
+                                },
+                                {
+                                    q: "¿Qué hacías sin música ni computadora?",
+                                    a: "Me la pasaba moviéndome de un lado a otro y a la noche caía rendido. La música del celu la reservaba para ocasiones especiales porque solo tenía cuatro baterías y no había cómo cargarlas."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo era tu vida cotidiana en la casa de don Blas?",
+                            a: "Muy distinta a la mía. Me levantaba temprano, aprendía equitación, charlaba con don Blas en la Biblioteca y me movía por la ciudad como un chico más. Los criados y esclavos se ocupaban de casi todo en la casa.",
+                            sub: [
+                                {
+                                    q: "¿Aprendiste a andar a caballo?",
+                                    a: "A la fuerza. Me dolía todo el cuerpo, pero terminé siendo un jinete más o menos aceptable. Don Blas decía que todo caballero debe saber montar."
+                                },
+                                {
+                                    q: "¿Querían mandarte al Real Colegio de San Carlos?",
+                                    a: "Sí, hasta con uniforme y bonete de tres picos. Pero en el examen me fue fatal, en parte a propósito porque no quería quedarme internado. El presbítero Benavídez dijo que no sabía latín ni catecismo, y don Blas decidió instruirme él mismo."
+                                },
+                                {
+                                    q: "¿Qué pasó con tu ropa del siglo XXI?",
+                                    a: "Don Blas la escondió en su ropero. Mientras tanto me prestaron ropa de Mateo, el primo de Margarita, que no se puso nada contento cuando se enteró. Al irme me devolvieron mis jeans, la remera y las zapatillas."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Cómo lograste ocultar tu teléfono móvil?",
+                    a: "Les decía que era una 'caja luminosa de cristal'. Margarita me descubrió rápido cuando me vio grabar un audio y tocar la pantalla táctil.",
+                    sub: [
+                        {
+                            q: "¿Cómo reaccionó Margarita ante tus «trucos»?",
+                            a: "Primero con mucho miedo y después con muchísima curiosidad. Para ella era pura magia, y de a poco fue pasando del susto al asombro y a hacerse mi amiga.",
+                            sub: [
+                                {
+                                    q: "¿Qué pasó cuando le sacaste una foto?",
+                                    a: "Se asustó muchísimo al verse «capturada» en la pantalla. Cuando se le pasó el susto me pidió repetirla porque había salido despeinada. ¡Desde ahí me tuvo más respeto, como si hubiera crecido veinte centímetros de golpe!"
+                                },
+                                {
+                                    q: "¿Cómo la engañaste para que pudiera salir al puerto?",
+                                    a: "Grabé su voz recitando versos de Corneille en francés y dejé el celu en su cuarto cerrado, para que su abuelo y Remigia pensaran que estaba estudiando. Cuando se escuchó a sí misma casi se desmaya."
+                                },
+                                {
+                                    q: "¿Qué opinaba Remigia de tu aparato?",
+                                    a: "Lo miraba con espanto desde lejos. Estaba convencida de que yo venía de «otro mundo», porque en sus rituales de adivinación veía imágenes de edificios altísimos que no podía nombrar."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Para qué usaste el celular en 1810?",
+                            a: "Sobre todo para registrar la experiencia: grabar conversaciones, sacar fotos y escuchar música. Y, por supuesto, para recibir los mensajes de texto de mi tío Francis.",
+                            sub: [
+                                {
+                                    q: "¿Qué grabó don Blas en el Cabildo Abierto?",
+                                    a: "Le enseñé a usar el celu y lo llevó en el bolsillo de la levita. Grabó las voces del obispo Lué, de Castelli, del fiscal Villota y de Paso. Esa noche las escuchamos juntos y él nos fue contando lo que había pasado."
+                                },
+                                {
+                                    q: "¿Qué pasó con las baterías?",
+                                    a: "Tenía cuatro y una se gastó entera con el truco de la voz de Margarita. Después ahorré todo lo que pude, hasta el 25 de mayo, cuando ya no me importó y saqué todas las fotos posibles."
+                                },
+                                {
+                                    q: "¿Qué pruebas trajiste de tu viaje?",
+                                    a: "Fotos, grabaciones y la esquelita de invitación al Cabildo Abierto que me regaló un chico llamado Saturnino. El problema es que nadie nos cree: todos dicen «qué bueno el vestuario, ¿esa peli ya la estrenaron?»."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué te recomendó tu tío Francis sobre la tecnología?",
+                            a: "Que no le mostrara a nadie nada de computación, porque no lo iban a entender y se iban a volver locos. Aun así me dejó llevar el celular, bien escondido.",
+                            sub: [
+                                {
+                                    q: "¿Pudiste cumplir con esa recomendación?",
+                                    a: "Más o menos. Un día no me pude aguantar y le saqué una foto a Margarita, y después se lo mostré a don Blas con la grabadora. Pero siempre traté de no mostrar nada ante gente desconocida."
+                                },
+                                {
+                                    q: "¿Cómo te comunicabas con Francis?",
+                                    a: "Con mensajes de texto que él logró hacer pasar por el agujero del tiempo. Tardaban muchísimo en llegar, porque allá pasan minutos mientras acá pasan meses."
+                                },
+                                {
+                                    q: "¿Qué pasó con la máquina del tiempo?",
+                                    a: "Se me perdió y casi me vuelvo loco buscándola. Resultó que Remigia la tenía en su pieza, tapada con una tela floreada, como si fuera una mesita de luz."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Qué sentiste al presenciar el Cabildo Abierto?",
+                    a: "Fue impresionante. Los libros del colegio lo cuentan como algo lejano, pero ver a Castelli y Paso discutir con tanta pasión por la patria te pone la piel de gallina.",
+                    sub: [
+                        {
+                            q: "¿Cómo era el ambiente en la Plaza de la Victoria?",
+                            a: "Hervía de gente a pesar de la lluvia y el frío. Yo no pude entrar al Cabildo porque solo dejaban pasar a los vecinos principales, así que viví todo desde la plaza.",
+                            sub: [
+                                {
+                                    q: "¿Quiénes estaban en la plaza?",
+                                    a: "De todo: jóvenes de familias ricas que no podían entrar por la edad, soldados, gente común de los barrios pobres que llaman «orilleros», aguateros, carniceros, panaderos, herreros, pescadores..."
+                                },
+                                {
+                                    q: "¿Cómo controlaban quién entraba al Cabildo?",
+                                    a: "Con unas esquelitas de invitación. Los muchachos de Patricios y de la Legión Infernal custodiaban las bocacalles y dejaban pasar rápido a los patriotas que llevaban cintas blancas o celeste y blanca."
+                                },
+                                {
+                                    q: "¿Pudiste ver a Mariano Moreno?",
+                                    a: "¡Sí! Era un hombre flaquito y morocho, con la cara picada de viruela y gestos nerviosos, que llegó un poco tarde. Era muy distinto al retrato del manual."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo hiciste para que todo saliera como en los libros?",
+                            a: "Con muchos nervios y mi libretita. Tenía mucho miedo de que mi presencia cambiara la historia, así que me dediqué a que todo ocurriera tal como lo había estudiado.",
+                            sub: [
+                                {
+                                    q: "¿Cómo convenciste a los patriotas en la jabonería?",
+                                    a: "Les conté con mi libretita lo de Napoleón, el rey preso y la caída de la Junta de Sevilla. Al principio no me creían, hasta que anuncié que el 14 de mayo llegaría un barco inglés con periódicos y así fue."
+                                },
+                                {
+                                    q: "¿Qué hiciste cuando Paso se enfermó?",
+                                    a: "Fui a su casa con Remigia y le di unas pastillas de mi botiquín. Transpiró un montón, se sintió mejor y pudo ir al Cabildo. ¡Su discurso fue clave para que ganaran los patriotas!"
+                                },
+                                {
+                                    q: "¿Cómo trajiste a Saavedra desde San Isidro?",
+                                    a: "Fuimos con Margarita a caballo bajo la lluvia. Le repetí una frase suya sobre que no era solo tiempo sino que no había que perder una hora, y se quedó tan desconcertado que entendió que debía volver."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo terminó todo el 25 de mayo?",
+                            a: "Con un nacimiento: el primer gobierno patrio. Ese día pasó de todo y cuando lo recuerdo todavía se me hace un nudo en la garganta.",
+                            sub: [
+                                {
+                                    q: "¿Qué pasó con la «junta trucha»?",
+                                    a: "El síndico Leiva armó una junta con Cisneros de presidente. Avisamos a Beruti y a los Patricios, el capitán Chiclana le dijo en la cara que al pueblo no le acomodaba, y finalmente el virrey tuvo que renunciar."
+                                },
+                                {
+                                    q: "¿Cómo festejaron la nueva Junta?",
+                                    a: "Con luminarias desde adentro de las casas, porque la lluvia apagaba los faroles de la calle. Encendimos velas en todos los candelabros y abrimos los postigos. Después hubo carbonada, ambrosía y huevos quimbos."
+                                },
+                                {
+                                    q: "¿Qué sentiste al volver al siglo XXI?",
+                                    a: "Estaba enfermo de gripe, el ruido me aturdía y sentía que ya no era el mismo chico que se había ido. Me sentía más grande, extrañaba a Margarita y todavía me pregunto por esa cabecita pelirroja del cuadro de la escuela."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        margarita: {
+            nombre: "Margarita de Ulloa",
+            img: "https://i.postimg.cc/Bv59pNPM/IMG-3107.jpg",
+            saludo: "Saludos. Soy Margarita de Ulloa. En nuestra época las jóvenes no solemos opinar en público, pero yo leo libros de filosofía a escondidas. Hazme una pregunta.",
+            preguntas: [
+                {
+                    q: "¿Cómo descubriste que Emanuel venía del futuro?",
+                    a: "¡Por sus costumbres estrafalarias! Su ropa tenía cierres extraños, usaba calzado con goma y hablaba de cosas raras como 'celulares' e 'internet'.",
+                    sub: [
+                        {
+                            q: "¿Cuándo lo viste aparecer por primera vez?",
+                            a: "Una noche escuché un ruido como de explosión de pólvora y vi luz por las rendijas de la Biblioteca. Mi abuelo había cerrado con llave, pero el agujero de la cerradura es tan grande que pude verlo todo.",
+                            sub: [
+                                {
+                                    q: "¿Qué viste por la cerradura?",
+                                    a: "A un muchachito chico, de pelo rojo, que se sacudía el polvo de las piernas y los brazos como si se hubiera caído de alguna parte. Parpadeaba como una lechuza asustada y cargaba una bolsa anaranjada."
+                                },
+                                {
+                                    q: "¿Cómo era la ropa que traía?",
+                                    a: "Un pantalón de tela azul gruesa, áspera y dura, con una franja de cuero y una palabra inglesa, y una camiseta con carteles en un idioma raro. Parecía ropa de esclavo. Después la encontré escondida en el ropero de mi abuelo."
+                                },
+                                {
+                                    q: "¿Qué dijo tu abuelo al presentártelo?",
+                                    a: "Que era el joven Manuel de los Rizos, hijo de unos buenos amigos, que se quedaría unos días bajo su tutela. Remigia no le creyó una sola palabra."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué sospechas tuviste sobre él?",
+                            a: "Muchas. No me cerraba su historia, su manera de hablar ni que no supiera ni latín. Me dediqué a anotar en un cuadernito todo lo raro que decía.",
+                            sub: [
+                                {
+                                    q: "¿Pensaste que era un espía inglés?",
+                                    a: "Sí, por las letras inglesas de su ropa. Me pregunté si querían aprovechar las novedades de la península para invadirnos otra vez, y hasta temí que mi abuelo estuviera ocultando a un traidor."
+                                },
+                                {
+                                    q: "¿Qué pensaba Remigia?",
+                                    a: "Hizo un ritual de adivinación con huesitos y un trozo de tela azul del pantalón. Primero creyó que lo había traído Mandinga, y al final dijo que venía de «otro mundo», no del Cielo ni del Infierno."
+                                },
+                                {
+                                    q: "¿Qué cosas raras notabas cuando hablaba?",
+                                    a: "Tenía un acento cantarino, no sabía quién era la emperatriz Carlota, se reía de la palabra «tripa» y cada vez que le preguntaba por Italia cambiaba de tema."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cuándo te confesó la verdad?",
+                            a: "El 23 de mayo, cuando lo encaré con mi cuadernito. Le dije que sabía que no venía de Europa y que, si me decía todo, no lo iba a denunciar.",
+                            sub: [
+                                {
+                                    q: "¿Cómo lo hiciste hablar?",
+                                    a: "Le mostré mis anotaciones de cosas que no encajaban y le dije que había descubierto algo que le interesaba muchísimo. No se lo daría hasta que me dijera toda la verdad."
+                                },
+                                {
+                                    q: "¿Qué había en el cuarto de Remigia?",
+                                    a: "Lo llevé de la mano hasta allí y levanté la tela floreada de la mesita de luz. ¡Era su máquina del tiempo, el famoso cajón que buscaba desesperado!"
+                                },
+                                {
+                                    q: "¿Te asustó saber que venía de otro tiempo?",
+                                    a: "Me asombró, pero ya había visto fotos y escuchado grabaciones, así que le creí. Lo que me dio miedo fue pensar que algún día iba a volver a su tiempo y que no lo vería nunca más."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Qué opinas del rol de la mujer en tu época?",
+                    a: "Nos imponen bordar y rezar, pero nosotras también tenemos pensamiento propio y amor a la patria. Sueño con un futuro donde las mujeres vayan a la universidad.",
+                    sub: [
+                        {
+                            q: "¿Cómo es tu educación comparada con la de otras jóvenes?",
+                            a: "Muy distinta. Mi abuelo me instruye en la Biblioteca como si fuera varón, y por eso Remigia y las amigas de mi madre lo critican tanto.",
+                            sub: [
+                                {
+                                    q: "¿Qué estudias con tu abuelo y tus maestros?",
+                                    a: "Leo en la Biblioteca, tengo clases de francés con monsieur Clarmont, expongo el Teorema de Pitágoras ante el profesor Amundsen y practico piano."
+                                },
+                                {
+                                    q: "¿Qué dicen Remigia y las amigas de tu madre?",
+                                    a: "Que a mi edad ya debería preparar el ajuar para casarme y que mis lecturas son vicios y pretensiones de hombres. Remigia me hace levantar a las siete para ir a misa, llueva o truene."
+                                },
+                                {
+                                    q: "¿Qué lees a escondidas?",
+                                    a: "Me quedo leyendo de noche a la luz de las velas que le robo a la despensa. Mi amiga Bernardina también me presta novelas francesas prohibidas, que son muchísimo más divertidas que Corneille."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué te molesta de las costumbres para las mujeres?",
+                            a: "Que a las señoritas nos ponen límites para todo. Desde que llegó Manuelito noto esas barreras con más claridad que nunca.",
+                            sub: [
+                                {
+                                    q: "¿Por qué envidiabas a Manuel y a Mateo?",
+                                    a: "Porque podían ir hasta el río, correr, ensuciarse y jugar a «moros y cristianos» con los muchachos del Alto de San Pedro Telmo. Más de una vez pensé: ¡ah, si yo fuera un muchacho!"
+                                },
+                                {
+                                    q: "¿Qué piensas de la ropa de las señoritas?",
+                                    a: "Es linda y femenina, pero muy incómoda: armazones rígidos, peinetones enormes... Nada de eso facilita la libertad de movimientos. A veces creo que nos convertimos en presas de nuestra propia coquetería."
+                                },
+                                {
+                                    q: "¿Qué opinas del casamiento de Bernardina?",
+                                    a: "Se casó con apenas catorce años con un hombre de unos treinta, y en mi época eso es de lo más normal. Manuel dijo que era «abuso infantil» y me ofendió más lo de «infantil» que lo de «abuso»."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo te sentiste al disfrazarte de muchacho?",
+                            a: "Fue una sensación extraña y liberadora. Por unos momentos pude hacer cosas que ninguna señorita tiene permitido.",
+                            sub: [
+                                {
+                                    q: "¿Cuándo te disfrazaste por primera vez?",
+                                    a: "Un día de rabia me puse el pantalón y la camiseta de Manuel y me vi en el espejo veneciano del ropero de mi abuelo: me devolvía la sonrisa un lindo y raro muchachito."
+                                },
+                                {
+                                    q: "¿Qué aventuras viviste disfrazada?",
+                                    a: "Fuimos con Mateo y Manuel al puerto, subimos al barco Misletoe y un hombre nos apuntó con una pistola. Terminamos trayendo un periódico inglés y unas cartas escondidas en una valija."
+                                },
+                                {
+                                    q: "¿Qué pasó en el Café de los Catalanes?",
+                                    a: "Fui con Manuel y estalló una trifulca de insultos y puñetazos entre godos y patriotas. Me dio muchísimo miedo y juré pensarlo dos veces antes de repetir semejante audacia."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Qué sintieron al saber sobre la caída de Sevilla?",
+                    a: "Entendimos que era la hora decisiva: si España cayó ante Napoleón, el Virrey Cisneros ya no tenía ninguna autoridad legítima sobre nosotros.",
+                    sub: [
+                        {
+                            q: "¿Cómo se enteró tu familia de las noticias?",
+                            a: "Primero por rumores que llegaban de Brasil, y después por los barcos que fueron arribando al Río de la Plata. Todo el mundo hablaba de lo mismo.",
+                            sub: [
+                                {
+                                    q: "¿Cómo llegaron los primeros rumores?",
+                                    a: "Un barco arribó a Brasil con noticias de hacía apenas tres meses. Mi abuelo las comentó en el almuerzo: decía que en Sevilla, el único lugar donde todavía mandaban los españoles, ahora mandaban los franceses."
+                                },
+                                {
+                                    q: "¿Qué pasó cuando mencionaste a los franceses?",
+                                    a: "Dije, como una tonta, que los recibiría con un «bonjour» bien pronunciado. A mi abuelo se le puso la cara morada de furia y juró que ningún gabacho pisaría estas tierras."
+                                },
+                                {
+                                    q: "¿Cómo se difundieron las noticias en la ciudad?",
+                                    a: "Llegó el Misletoe el 14 de mayo y luego el Juan París, retrasado por una tormenta. Cisneros hizo leer una proclama, pero ocultó gran parte de la información. Igual los chismes corren más rápido que cualquier bando."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Quiénes se oponían a formar un gobierno propio?",
+                            a: "Los partidarios del virrey, tanto españoles como criollos. Para ellos, defender a España significaba mantener a Cisneros en su puesto.",
+                            sub: [
+                                {
+                                    q: "¿Qué decían los Velazco?",
+                                    a: "Que era de cobardes aprovechar la desgracia de la Madre Patria. Doña Carmen incluso organizaba una colecta de joyas para ayudar a la Junta de Cádiz, y su hijo Juan Antonio se enfurecía ante la sola idea de reemplazar al virrey."
+                                },
+                                {
+                                    q: "¿Qué pasó en el Café de los Catalanes?",
+                                    a: "Llegaron unos godos con el señor Velazco y su hijo gritando vivas al virrey, y un joven de la Legión Infernal respondió que era una provocación. Terminaron a los golpes y los Velazco salieron volando por una ventana a un charco."
+                                },
+                                {
+                                    q: "¿Qué decían de los patriotas?",
+                                    a: "Los llamaban jacobinos, facciosos, descreídos y libertinos. Juan Antonio temía que, si triunfaban, lo próximo fuera abolir la esclavitud, y doña Carmen casi se desmaya de escándalo."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo viviste la semana de Mayo?",
+                            a: "Fue como si el tiempo corriera más rápido. Sentí que yo también cambiaba, que crecía de golpe, al mismo ritmo que la ciudad.",
+                            sub: [
+                                {
+                                    q: "¿Qué hiciste el 25 de mayo?",
+                                    a: "Fui a la plaza con doña Josefa de Vieytes y sus hijos, bajo la lluvia. Ella dijo que la patria estaba naciendo y que las mujeres teníamos que estar presentes, y que mi madre habría estado allí."
+                                },
+                                {
+                                    q: "¿Cómo se celebró esa noche?",
+                                    a: "Con luminarias. Como la lluvia y el viento apagaron los faroles, alguien propuso iluminar desde adentro de las casas. Encendimos velas en todos los candelabros y abrimos los postigos para que se viera desde la calle."
+                                },
+                                {
+                                    q: "¿Qué sentiste cuando Manuel se fue?",
+                                    a: "Una tristeza enorme. Lo escuché partir detrás de la puerta de la Biblioteca y no quise verlo irse por miedo a llorar. Le pedí a Remigia que le preguntara a sus dioses si Manuel y yo volveríamos a encontrarnos."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        donblas: {
+            nombre: "Don Blas de Ulloa",
+            img: "https://i.postimg.cc/wxQ3f8sJ/IMG-3110.jpg",
+            saludo: "Bienvenido a mi biblioteca. Soy Don Blas de Ulloa, servidor de la causa patriota y amante de la Ilustración. Pregúntame lo que desees.",
+            preguntas: [
+                {
+                    q: "¿Por qué protegieron a Emanuel al llegar?",
+                    a: "Noté en sus ojos una pureza noble y un saber singular. Presentarlo como 'Manuelito de los Rizos' evitó habladurías o peligrosas acusaciones de hechicería.",
+                    sub: [
+                        {
+                            q: "¿Qué te contó Emanuel sobre el futuro?",
+                            a: "Cosas asombrosas. Me habló de aparatos que funcionan con electricidad y de que algún día seremos un país libre y soberano. Yo no podía parar de preguntarle.",
+                            sub: [
+                                {
+                                    q: "¿Qué fue lo que más te asombró?",
+                                    a: "La electricidad, que me explicó como la fuerza del rayo. Recordé entonces el rayo que cayó sobre el campanario del Cabildo en 1779 y desbarató el reloj. ¡Imaginar domesticar ese poder!"
+                                },
+                                {
+                                    q: "¿Qué opinaste de que en el futuro haya una presidenta?",
+                                    a: "Me cambió el semblante: si hay presidenta elegida por el voto, entonces seremos una república independiente. Aunque bromeé con que habían domesticado al rayo pero no a las mujeres."
+                                },
+                                {
+                                    q: "¿Qué te dijo sobre la emperatriz Carlota?",
+                                    a: "Que no sería ella quien nos gobernaría. Carlota es la hermana de Fernando VII y vive en Río de Janeiro, y algunos patriotas pensaban ponerse bajo su mando para librarse de España. Su palabra me alivió."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo lo presentaste ante la sociedad?",
+                            a: "Con una historia que sonara creíble: el hijo de un buen amigo, criado en Italia. Así se explicaba su acento tan raro y su falta de costumbres.",
+                            sub: [
+                                {
+                                    q: "¿Qué historia inventaste sobre él?",
+                                    a: "Que sus padres, nacidos en Buenos Aires, se fueron a vivir a Italia y lo criaron allí. Más tarde dije que era hijo de un amigo español para poder inscribirlo en el Colegio."
+                                },
+                                {
+                                    q: "¿Cómo lo trató Remigia?",
+                                    a: "Con mucha desconfianza al principio. Lo llamaba «renacuajo» y «mocito». Con el tiempo lo miró con menos recelo, y eso me alegró, porque una enemiga como Remigia es más peligrosa que el mismísimo Cisneros."
+                                },
+                                {
+                                    q: "¿Qué dijo el presbítero Benavídez de él?",
+                                    a: "Que carecía de los conocimientos más elementales: ni latín ni catecismo, y casi nada de geografía. Me recomendó instruirlo yo mismo, y me miró como sospechando que yo también andaba por caminos de herejía."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué esperabas de Manuel?",
+                            a: "Que nos ayudara a que todo ocurriera tal como él lo conocía. Creí que esa era nuestra gran oportunidad y no había que dejarla pasar.",
+                            sub: [
+                                {
+                                    q: "¿Por qué lo llevaste a la jabonería de Vieytes?",
+                                    a: "Para que contara directamente las noticias de Europa. Tuve que defenderlo ante mis amigos, que protestaron por la presencia de un niño en la reunión."
+                                },
+                                {
+                                    q: "¿Qué le pediste en aquella reunión?",
+                                    a: "Que prestara mucha atención y me ayudara a lograr que el Virreinato terminara de una vez por todas. Con un gobierno propio, independiente de España."
+                                },
+                                {
+                                    q: "¿Confiabas en él?",
+                                    a: "Plenamente. Cuando Rodríguez Peña dudó de sus palabras salí a responder yo por él, muy ofendido. Y en la práctica, nunca nos falló."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Qué se discutía en la Jabonería de Vieytes?",
+                    a: "Debatíamos sobre la soberanía popular: si el Rey Fernando VII estaba preso, el poder debía volver al pueblo para elegir nuestro propio gobierno.",
+                    sub: [
+                        {
+                            q: "¿Quiénes participaban en esas reuniones?",
+                            a: "Patriotas de todo tipo: comerciantes, abogados, militares y hombres de letras. Era una tertulia secreta, y muchos nombres los conocerá la historia.",
+                            sub: [
+                                {
+                                    q: "¿Quién era el dueño de casa?",
+                                    a: "Hipólito Vieytes, fabricante de jabón y velas de sebo. La propiedad era de su socio, Nicolás Rodríguez Peña."
+                                },
+                                {
+                                    q: "¿Por qué elegían ese lugar?",
+                                    a: "Porque es casi campo abierto y no se llega con facilidad: hay que cruzar un bajío y una zanja. Esas tertulias son un secreto bien guardado, y podrían costarnos el destierro si llegaran a oídos del virrey."
+                                },
+                                {
+                                    q: "¿Cómo reaccionaron ante Manuel?",
+                                    a: "Con enojo al principio, y con asombro después. Cuando habló de independencia, de comercio libre y de una patria soberana, todos se pusieron de pie y lo aplaudieron."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué proponían hacer con el virrey?",
+                            a: "Había varias posturas. Los más jóvenes querían actuar ya, y otros preferíamos un camino con menos sangre.",
+                            sub: [
+                                {
+                                    q: "¿Cuál era la postura de Saavedra?",
+                                    a: "Buscar una solución menos violenta: fingir que gobernaríamos en nombre de Fernando VII."
+                                },
+                                {
+                                    q: "¿Qué opinaban los más jóvenes?",
+                                    a: "Que había que derrocar a Cisneros por las armas si era necesario, y que el tiempo apremiaba."
+                                },
+                                {
+                                    q: "¿Qué era esa «máscara» de la que hablaba Belgrano?",
+                                    a: "Gobernar en nombre del rey preso para no romper abiertamente con la corona. Belgrano dijo que esa sería nuestra máscara, y todos coincidimos."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo se informaban y se comunicaban en esa época?",
+                            a: "Con grandes dificultades. Una noticia puede tardar meses en llegar y un mensaje mal transmitido puede arruinarlo todo.",
+                            sub: [
+                                {
+                                    q: "¿Cómo llegó el periódico del Misletoe?",
+                                    a: "Lo trajeron unos jóvenes que subieron al barco. Un hombre de Caracas se los entregó. Luego Remigia lo llevó a Vieytes escondido bajo un paño y unos buñuelos, y los soldados del virrey casi lo descubren."
+                                },
+                                {
+                                    q: "¿Por qué es peligroso confiar mensajes a los esclavos?",
+                                    a: "Porque si los detienen pueden comprometernos, y pocos pueden entender y transmitir bien un mensaje. Aunque, claro, la negra Remigia puede todo."
+                                },
+                                {
+                                    q: "¿Quiénes llevaban los mensajes?",
+                                    a: "Los muchachos de la Legión Infernal, comandados por Domingo French y Antonio Beruti. French fue cartero y nadie conoce como él las calles de la ciudad."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Tenía fe en el éxito de la Revolución?",
+                    a: "La libertad siempre demanda valentía y templanza. Sabía que los criollos estábamos listos para tomar las riendas de nuestro propio destino.",
+                    sub: [
+                        {
+                            q: "¿Cómo ayudaste en los momentos difíciles?",
+                            a: "Con firmeza y rapidez. Escuchaba a Manuel, que parecía anticiparse a los hechos, y actuaba de inmediato para avisar a nuestros amigos.",
+                            sub: [
+                                {
+                                    q: "¿Cómo convenciste a los demás de esperar el cabildo abierto?",
+                                    a: "Hablé con tanta firmeza y entusiasmo que calmé a un exaltado. Les expliqué que había que esperar unos días para que todo saliera bien."
+                                },
+                                {
+                                    q: "¿Qué hiciste cuando Cisneros armó una junta con él mismo de presidente?",
+                                    a: "Avisé a Antonio Beruti para que movilizara a los Infernales, y yo mismo llevé la noticia al Cuartel de las Temporalidades, donde están los batallones de Patricios."
+                                },
+                                {
+                                    q: "¿Qué hiciste el 25 de mayo en el Cabildo?",
+                                    a: "Me indignó que los Cabildantes deliberaran a puertas cerradas. Golpeé la puerta y grité que el pueblo quería saber de qué se trataba."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo viviste el Cabildo Abierto del 22 de mayo?",
+                            a: "Con mucha ansiedad. Llevé la «caja mágica» de Manuel en el bolsillo para guardar las voces de quienes hablaran, y esa noche las escuchamos todos juntos.",
+                            sub: [
+                                {
+                                    q: "¿Qué dijo el obispo Lué?",
+                                    a: "Que mientras quedara un solo español en América, él mandaría sobre los americanos. Sostenía que, como España conquistó América, los conquistadores deben mandar sobre los conquistados."
+                                },
+                                {
+                                    q: "¿Qué respondió Castelli?",
+                                    a: "Que si los conquistadores mandan sobre los conquistados, entonces los franceses mandarían sobre España. Y que América pertenece al rey, que está preso, por lo cual había que formar un gobierno propio."
+                                },
+                                {
+                                    q: "¿Cuál fue el argumento decisivo de Paso?",
+                                    a: "Que era legal que en una urgencia extrema alguien se hiciera cargo de los asuntos de otro ausente. Buenos Aires, como hermana mayor de las ciudades del Virreinato, debía decidir, y luego un congreso aprobaría lo actuado."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué recuerdas de tu hijo Diego y de su misión?",
+                            a: "Con mucho dolor y con mucho orgullo. Diego era mi hijo, amigo de Belgrano, y creyó firmemente que debía ayudar a la grandeza de estas tierras.",
+                            sub: [
+                                {
+                                    q: "¿Quién fue Diego para Belgrano?",
+                                    a: "Un gran amigo. Estudiaron juntos en España, se recibieron de abogados y volvieron para aplicar en la patria lo aprendido, sobre todo en economía."
+                                },
+                                {
+                                    q: "¿Qué misión llevaron a Londres?",
+                                    a: "En 1802 Belgrano le encargó una misión secreta. Para no despertar sospechas, mi nuera Felicitas lo acompañó. Su barco naufragó en una furiosa tormenta del Atlántico."
+                                },
+                                {
+                                    q: "¿Qué le dijiste a Margarita cuando abriste la habitación de sus padres?",
+                                    a: "Que no fue una decisión fácil para ellos dejarla tan pequeña, pero que creían firmemente en la causa. También le regalé la autómata arpista que su madre había recibido de un viajero francés cuando ella nació."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        belgrano: {
+            nombre: "Manuel Belgrano",
+            img: "https://i.postimg.cc/tgdQkDnV/IMG-3098.jpg",
+            saludo: "Un saludo cordial. Soy Manuel Belgrano. La causa de la patria exige compromiso, educación e ideales de libertad. ¿Qué deseas consultar sobre nuestras ideas?",
+            preguntas: [
+                {
+                    q: "¿Por qué impulsaban la Revolución con tanto ímpetu?",
+                    a: "Porque entendíamos que el pueblo del Río de la Plata ya estaba maduro para decidir su propio destino sin la tutela colonial de una potencia distante.",
+                    sub: [
+                        {
+                            q: "¿Qué pasó en España para que reaccionaran?",
+                            a: "Napoleón invadió la península y el poder español se desmoronó. Eso nos dejó sin una autoridad legítima a quien obedecer.",
+                            sub: [
+                                {
+                                    q: "¿Qué noticias trajo Manuel en la jabonería?",
+                                    a: "Que en 1808 Napoleón invadió España, que Carlos IV abdicó en favor de Fernando VII y que ambos quedaron presos. Napoleón puso de rey a su hermano José Bonaparte, al que el pueblo llama «Pepe Botella»."
+                                },
+                                {
+                                    q: "¿Qué pasó con la Junta de Sevilla?",
+                                    a: "En enero de 1810 los franceses tomaron Sevilla y la Junta se disolvió. Los diputados huyeron a Cádiz, donde formaron una nueva junta que aconsejó a los pueblos de América formar sus propias juntas."
+                                },
+                                {
+                                    q: "¿Por qué Cisneros ya no representaba a nadie?",
+                                    a: "Porque lo había nombrado la Junta de Sevilla, que ya no existía. Con Fernando VII preso en Bayona y la Junta Central disuelta, el virrey se quedó sin respaldo."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo se organizaron los patriotas?",
+                            a: "En reuniones secretas, con jóvenes y militares dispuestos a todo. Había distintas opiniones, pero todos queríamos un gobierno propio.",
+                            sub: [
+                                {
+                                    q: "¿Por qué querían gobernar en nombre de Fernando VII?",
+                                    a: "Era una máscara. Nos permitía romper con Cisneros sin enfrentarnos de inmediato a toda la monarquía, y atraer a quienes aún respetaban al rey preso."
+                                },
+                                {
+                                    q: "¿Dónde estabas durante las reuniones del 18 de mayo?",
+                                    a: "Castelli, que es mi primo, y yo estábamos en su quinta. Pero los jefes de la Legión Infernal enviaron a buscarnos para que estuviéramos en la ciudad al día siguiente."
+                                },
+                                {
+                                    q: "¿Qué papel tuvo la Legión Infernal?",
+                                    a: "Un papel enorme. Esos jóvenes, bajo las órdenes de French y Beruti, llevaban mensajes a los cuarteles y estaban listos para una sublevación popular."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué pensabas del plan de la infanta Carlota?",
+                            a: "Algunos patriotas llegaron a pensar en ponerse bajo su mando para librarse de España, pero muy pronto comprendimos que era una idea descabellada.",
+                            sub: [
+                                {
+                                    q: "¿Por qué pensaron en Carlota al principio?",
+                                    a: "Es hermana de Fernando VII y vive en Río de Janeiro con su corte. A algunos les parecía una solución para escapar de España sin caer en manos francesas."
+                                },
+                                {
+                                    q: "¿Por qué abandonaron esa idea?",
+                                    a: "Porque era un disparate y, sobre todo, no hacía falta. Podíamos tener un gobierno propio."
+                                },
+                                {
+                                    q: "¿Qué querían lograr con la independencia?",
+                                    a: "Comercio libre, sin monopolios, y una patria soberana. Que el Río de la Plata pudiera decidir su destino por sí mismo."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Qué papel juega la educación en su visión de país?",
+                    a: "Un pueblo sin educación es fácil víctima de la tiranía. La instrucción pública, el comercio justo y el trabajo son los pilares de una nación libre.",
+                    sub: [
+                        {
+                            q: "¿Qué hiciste para difundir tus ideas?",
+                            a: "Escribir, fundar y apoyar. Creo que las ideas no sirven si no llegan a la gente.",
+                            sub: [
+                                {
+                                    q: "¿Qué periódico fundaste?",
+                                    a: "En 1802 fundé un periódico junto con Vieytes, para que las ideas sobre economía se difundieran entre la gente."
+                                },
+                                {
+                                    q: "¿Qué escuelas y bibliotecas apoyaste?",
+                                    a: "Apoyábamos la educación creando escuelas y bibliotecas. Para mí, el conocimiento es la base de una patria."
+                                },
+                                {
+                                    q: "¿Qué ideas económicas defendías?",
+                                    a: "Que estas tierras no debían vivir solo de la ganadería, sino también de la agricultura, la industria y el libre comercio."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué recuerdas de tu amigo Diego de Ulloa?",
+                            a: "Fue un gran amigo y un gran patriota. Compartimos estudios y sueños, y me duele mucho su pérdida.",
+                            sub: [
+                                {
+                                    q: "¿Cómo se conocieron?",
+                                    a: "Estudiamos juntos en España y volvimos juntos para aplicar en la patria lo aprendido. Los dos nos recibimos de abogados, pero nos interesaba sobre todo la economía."
+                                },
+                                {
+                                    q: "¿Qué misión le encomendaste?",
+                                    a: "En 1802 le pedí una misión secreta en Londres. Para no despertar sospechas, su esposa Felicitas lo acompañó."
+                                },
+                                {
+                                    q: "¿Qué pasó con ese viaje?",
+                                    a: "El buque naufragó en una furiosa tormenta del Atlántico. Dejaron a su pequeña hija, Margarita, creyendo firmemente que servían a la grandeza de estas tierras."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué papel tienen los jóvenes y las mujeres en la causa?",
+                            a: "Fundamental. La patria se construye con todos, y en estos días lo vimos con claridad.",
+                            sub: [
+                                {
+                                    q: "¿Qué hacían los jóvenes de la Legión Infernal?",
+                                    a: "Vestidos de rojo, bajo las órdenes de French y Beruti, llevaban mensajes, custodiaban las bocacalles de la plaza y estaban dispuestos a levantarse si era necesario."
+                                },
+                                {
+                                    q: "¿Qué opinas de Manuel, el joven de Italia?",
+                                    a: "Un muchacho curioso, con una información extraordinaria y un entusiasmo contagioso. Al principio dudé de él, pero sus noticias se confirmaron."
+                                },
+                                {
+                                    q: "¿Qué papel tuvieron las mujeres?",
+                                    a: "Fueron esenciales aunque no figuren en los bandos. Doña Josefa de Vieytes dijo que la patria estaba naciendo y que las mujeres debíamos estar presentes. Y tenía razón."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Qué opinó sobre las noticias que traía Emanuel?",
+                    a: "Sus datos sobre la caída de la Junta Central de Sevilla confirmaron lo que sospechábamos: era el momento exacto e impostergable para tomar la iniciativa.",
+                    sub: [
+                        {
+                            q: "¿Desconfiaste de él al principio?",
+                            a: "Naturalmente. Un niño que llega con noticias tan graves debía ser puesto a prueba, y yo fui de los primeros en interrogarlo.",
+                            sub: [
+                                {
+                                    q: "¿Qué le preguntaste?",
+                                    a: "Si estaba seguro de lo que decía. Me respondió que lo había leído en un periódico inglés y me dio más detalles sobre la Junta de Sevilla y la Junta de Cádiz."
+                                },
+                                {
+                                    q: "¿Cómo comprobaron que decía la verdad?",
+                                    a: "Anunció que el 14 de mayo llegaría al puerto el barco inglés Misletoe con periódicos londinenses de febrero. Y así ocurrió: los periódicos confirmaron todo."
+                                },
+                                {
+                                    q: "¿Qué te llamó la atención de su manera de hablar?",
+                                    a: "Su acento indefinible y algunas palabras que ninguno conocíamos. Mi primo Castelli pensó que era dialecto italiano. Pero lo que importaba era la verdad de sus noticias."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué hicieron durante la semana de Mayo?",
+                            a: "Trabajamos sin descanso. Cada día traía una novedad y había que mantener a todos unidos.",
+                            sub: [
+                                {
+                                    q: "¿Por qué pedían un cabildo abierto?",
+                                    a: "Porque Cisneros ya no representaba a nadie y queríamos que los vecinos decidieran. Algunos querían actuar de inmediato, pero se logró esperar unos días."
+                                },
+                                {
+                                    q: "¿Qué hiciste durante el Cabildo Abierto del 22?",
+                                    a: "En un momento me asomé al balcón agitando un pañuelo blanco para que la multitud de la plaza gritara y presionara a los cabildantes."
+                                },
+                                {
+                                    q: "¿Qué sucedió con la junta que presidía Cisneros?",
+                                    a: "El síndico Leiva armó una junta con el virrey a la cabeza. Fue una burla a la voluntad popular, y el pueblo y las tropas se levantaron contra ella."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué juraste el 24 de mayo?",
+                            a: "Fue uno de los momentos más tensos de la semana. Estábamos en casa de Rodríguez Peña, y la decisión no podía esperar más.",
+                            sub: [
+                                {
+                                    q: "¿Qué pasó en esa reunión?",
+                                    a: "Mis amigos dudaban de qué hacer. Me levanté furioso, entré al comedor con la espada desenvainada y juré que, si el virrey no renunciaba a las tres de la tarde del día siguiente, yo mismo lo derribaría por las armas."
+                                },
+                                {
+                                    q: "¿Cómo reaccionaron?",
+                                    a: "Después de eso todo se encaminó hacia un único desenlace posible. Castelli redactó la renuncia colectiva y Saavedra también renunció a la junta de Cisneros."
+                                },
+                                {
+                                    q: "¿Cómo terminó todo?",
+                                    a: "El 25 de mayo se formó la Primera Junta. Saavedra fue presidente, yo fui vocal junto a Castelli y otros, y los doctores Paso y Moreno fueron secretarios."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        saavedra: {
+            nombre: "Cornelio Saavedra",
+            img: "https://i.postimg.cc/hG8WsMQQ/IMG-3099.jpg",
+            saludo: "A sus órdenes. Soy Cornelio Saavedra, comandante del Regimiento de Patricios. La prudencia y la firmeza del brazo armado sostienen nuestra causa.",
+            preguntas: [
+                {
+                    q: "¿Cuál fue el papel del Regimiento de Patricios en Mayo?",
+                    a: "Garantizar la seguridad y respaldar el clamor popular. Sin las armas de la patria defendiendo a la junta criolla, el Virrey jamás hubiese cedido su puesto.",
+                    sub: [
+                        {
+                            q: "¿Cómo se organizaban los Patricios?",
+                            a: "Somos una de las milicias urbanas que se formaron después de las invasiones inglesas. Nuestros oficiales son hombres comprometidos con la ciudad y con la causa.",
+                            sub: [
+                                {
+                                    q: "¿Quiénes eran los jefes del regimiento?",
+                                    a: "Yo soy el comandante y Viamonte es mi segundo. Belgrano es sargento mayor y Chiclana es capitán. Nuestro cuartel está en las Temporalidades."
+                                },
+                                {
+                                    q: "¿Qué querían hacer los oficiales jóvenes?",
+                                    a: "Algunos, reunidos en casa de Viamonte, querían tirar abajo al virrey por la fuerza con el regimiento. Pero Viamonte dijo que no podía hacer nada sin consultarme, y yo estaba en mi quinta de San Isidro."
+                                },
+                                {
+                                    q: "¿Cómo custodiaron la plaza el día del Cabildo Abierto?",
+                                    a: "Junto con la Legión Infernal, nos apostamos en las bocacalles y controlamos quién entraba. El virrey esperaba que lo hiciera el Regimiento Fijo, pero eso no ocurrió."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué hicieron cuando Cisneros formó la «junta trucha»?",
+                            a: "Fue una burla al pueblo. Mis oficiales y tropas no estaban dispuestos a aceptarla, y me lo hicieron saber con toda claridad.",
+                            sub: [
+                                {
+                                    q: "¿Qué te dijo el capitán Chiclana?",
+                                    a: "Le dijo en la cara al síndico Leiva que al pueblo no le acomodaba que el virrey quedara en el gobierno bajo ningún aspecto. Leiva lo mandó arrestar por impostor."
+                                },
+                                {
+                                    q: "¿Qué te dijeron los oficiales esa noche?",
+                                    a: "Que el descontento era gravísimo y que, si Cisneros no salía de la Junta, los regimientos se levantarían en armas. Debo confesar que eso me afectó mucho."
+                                },
+                                {
+                                    q: "¿Por qué renunciaste como vocal?",
+                                    a: "Para calmar los ánimos. Propuse primero que Cisneros dejara el mando de las armas, pero al final renuncié y los demás hicieron lo mismo. Al día siguiente, acepté presidir la nueva Junta."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo era tu relación con la tropa?",
+                            a: "De mucho respeto mutuo. Me quieren no solo en mi regimiento, sino en toda la ciudad, y eso me da una gran responsabilidad.",
+                            sub: [
+                                {
+                                    q: "¿Cómo calmaste a los exaltados el 21 de mayo?",
+                                    a: "Me mandaron a buscar, llegué a las dos de la tarde, hablé con unos pocos y pegué algunos gritos. La gente se tranquilizó y se fue a dormir la siesta."
+                                },
+                                {
+                                    q: "¿Qué les dijiste a los Patricios en el cuartel el 24?",
+                                    a: "Que no hacía falta marchar sobre el fuerte porque el virrey y los vocales ya habían renunciado. Querían sacarlo a la fuerza, y tuve que serenarlos."
+                                },
+                                {
+                                    q: "¿Por qué estabas en San Isidro?",
+                                    a: "Es mi quinta, donde descanso. Siempre creí que las cosas debían madurar a su tiempo, y por eso tardaba en volver a la ciudad."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Por qué pedía actuar con tanta prudencia?",
+                    a: "Debíamos esperar el momento político idóneo. Como dije a los compatriotas: 'Señores, ahora digo que no solo es tiempo, sino que no se debe perder una sola hora'.",
+                    sub: [
+                        {
+                            q: "¿Qué opinas de los impacientes?",
+                            a: "Los comprendo, pero creo que la violencia debe ser el último recurso. Prefiero que las cosas se hagan bien y sin derramar sangre.",
+                            sub: [
+                                {
+                                    q: "¿Qué decía tu frase sobre las brevas?",
+                                    a: "Que aún no era tiempo y que lo que se hace fuera de tiempo no sale bien. Que había que dejar madurar las brevas antes de comerlas."
+                                },
+                                {
+                                    q: "¿Por qué querías evitar la sangre?",
+                                    a: "Porque pensaba en una solución menos violenta: fingir que gobernaríamos en nombre de Fernando VII. Belgrano la llamó nuestra máscara y la compartió."
+                                },
+                                {
+                                    q: "¿Qué pensaste cuando Manuel te citó tu propia frase?",
+                                    a: "Me desconcertó. Le pregunté quién era el autor de esas palabras y me dijo que yo. Algo resonó en mi interior y comprendí la urgencia de volver a la ciudad."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué hiciste el 20 de mayo?",
+                            a: "Fue un día decisivo. Estaba en San Isidro cuando llegaron visitas inesperadas, y desde ahí todo se aceleró.",
+                            sub: [
+                                {
+                                    q: "¿Quiénes te fueron a buscar a San Isidro?",
+                                    a: "Un muchacho llamado Manuel y la nieta de don Blas, Margarita. Llegaron empapados bajo la lluvia, a caballo, y yo ya estaba mateando. Me sorprendió ver allí a la niña."
+                                },
+                                {
+                                    q: "¿Qué te pidió Cisneros al volver a la ciudad?",
+                                    a: "Me convocó y me pidió apoyo militar para sostenerse en el poder. Yo, por supuesto, se lo negué."
+                                },
+                                {
+                                    q: "¿Qué dijo Cisneros sobre el cabildo abierto?",
+                                    a: "Que ya que el pueblo no lo quería y el ejército lo abandonaba, hicieran lo que quisieran. Así se convocó el Cabildo Abierto para el 22 de mayo."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cuál fue tu postura frente a la autoridad del virrey?",
+                            a: "Entendía que ya no era legítima, pero también que debía haber orden y respeto en el cambio. Siempre pedí que se respetara su persona.",
+                            sub: [
+                                {
+                                    q: "¿Estuviste en la reunión de Rodríguez Peña el 18 de mayo?",
+                                    a: "No. Como dijeron mis amigos, por algo no vine esa noche: estaba en mi chacra de San Isidro, en el pago de la Costa."
+                                },
+                                {
+                                    q: "¿Qué dijiste al jurar como presidente?",
+                                    a: "Exhorté a todos a mantener el orden, la unión y la fraternidad. Rogué que se respetara a Cisneros y a su familia."
+                                },
+                                {
+                                    q: "¿Qué opinaban tus amigos de tu prudencia?",
+                                    a: "Con confianza me llaman «Cornelio», y saben que no me gusta apurar las cosas. A veces discuten conmigo, pero en los momentos decisivos siempre cuentan con mi regimiento."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    q: "¿Cómo se vivió la jornada del 25 de mayo?",
+                    a: "Fue un día de enorme expectativa popular en la plaza. Al asumir la presidencia de la Primera Junta sentí la inmensa responsabilidad de conducir los primeros pasos de la patria.",
+                    sub: [
+                        {
+                            q: "¿Cómo fue la mañana en el Cabildo?",
+                            a: "Muy tensa. Los capitulares rechazaron la renuncia de Cisneros y nos pidieron que defendiéramos al virrey, y el pueblo se impacientaba en la plaza.",
+                            sub: [
+                                {
+                                    q: "¿Qué hizo el Cabildo con la renuncia del virrey?",
+                                    a: "La rechazó y pidió que mandara las tropas a reprimir a los descontentos. Pero los militares respondieron que ni siquiera podían sostenerse a sí mismos contra el pueblo y la tropa sublevados."
+                                },
+                                {
+                                    q: "¿Qué pasó con el petitorio de la nueva junta?",
+                                    a: "Lo presentaron al Cabildo y Leiva pidió que el pueblo lo ratificara desde la plaza. Preguntó con ironía dónde estaba el pueblo, y Beruti amenazó con tocar a generala."
+                                },
+                                {
+                                    q: "¿Por qué no tocaron la campana del Cabildo?",
+                                    a: "Porque no tenía badajo. Liniers lo hizo quitar el primero de enero de 1809, después de la conspiración de Martín de Alzaga."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Cómo fue la jura de la Primera Junta?",
+                            a: "Una ceremonia solemne y conmovedora. Todos los presentes sentimos que nacía algo grande.",
+                            sub: [
+                                {
+                                    q: "¿Cómo fue la ceremonia?",
+                                    a: "Nos arrodillamos ante la mesa y el síndico me hizo poner la mano sobre los Evangelios. Después Castelli puso su mano en mi hombro y Belgrano en el de Castelli, y así se fueron sumando todos."
+                                },
+                                {
+                                    q: "¿Quiénes integraban la Junta?",
+                                    a: "Yo como presidente. Los vocales eran Castelli, Belgrano, Azcuénaga, Alberti, Matheu y Larrea. Los secretarios, los doctores Juan José Paso y Mariano Moreno."
+                                },
+                                {
+                                    q: "¿Qué dijiste en tu discurso?",
+                                    a: "Hablé conmovido, conteniendo el llanto. Pedí orden, unión y fraternidad entre todos, y respeto para Cisneros y su familia."
+                                }
+                            ]
+                        },
+                        {
+                            q: "¿Qué sentiste al asumir la presidencia?",
+                            a: "Una mezcla de orgullo, emoción y mucha preocupación. Sabía que ese cargo no era un honor sino un compromiso.",
+                            sub: [
+                                {
+                                    q: "¿Por qué aceptaste el cargo?",
+                                    a: "Para contribuir a la tranquilidad pública y a la salud del pueblo. Así lo manifesté antes de jurar."
+                                },
+                                {
+                                    q: "¿Quiénes juraron obediencia después?",
+                                    a: "Al día siguiente, el Cabildo, la Audiencia y las tropas formadas en la plaza. Algunos, como Lezica y el fiscal Caspe, juraron con reparos. Después hubo salvas de artillería, incluso de los buques ingleses."
+                                },
+                                {
+                                    q: "¿Qué hizo Cisneros después de ser depuesto?",
+                                    a: "Corrieron rumores de que envió a alguien de confianza a Córdoba para pedirle ayuda a Liniers. Vieytes dijo que el Sordo no se resigna a perder su lugar."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    };
+
+    function seleccionarPersonaje(p, btn) {
+        personajeActual = p;
+        
+        // Actualizar estado de botones superiores
+        document.querySelectorAll('.selector-personaje button').forEach(b => b.classList.remove('selected'));
+        if (btn) btn.classList.add('selected');
+
+        // Actualizar foto y nombre
+        const data = datosChat[p];
+        document.getElementById('charImg').src = data.img;
+        document.getElementById('charName').innerText = data.nombre;
+
+        // Resetear globito
+        const globitoBox = document.getElementById('globitoBox');
+        document.getElementById('globitoPregunta').style.display = 'none';
+        document.getElementById('globitoRespuesta').innerText = data.saludo;
+
+        // Reaplicar animación
+        globitoBox.classList.remove('animar-globito');
+        void globitoBox.offsetWidth; // Forzar reflow
+        globitoBox.classList.add('animar-globito');
+
+        // Cargar botones de preguntas
+        cargarPreguntas();
+    }
+
+    function cargarPreguntas(lista, nivel) {
+        const contenedor = document.getElementById('opcionesPreguntas');
+        contenedor.innerHTML = '';
+
+        // Sin argumentos: se muestran las 3 preguntas iniciales del personaje
+        lista = lista || datosChat[personajeActual].preguntas;
+        nivel = nivel || 1;
+
+        lista.forEach(item => {
+            const btn = document.createElement('button');
+            btn.innerText = "❓ " + item.q;
+            btn.onclick = () => {
+                responderEnGlobito(item.q, item.a);
+                // Si la pregunta tiene subpreguntas, se muestran las 3 siguientes
+                if (item.sub) cargarPreguntas(item.sub, nivel + 1);
+            };
+            contenedor.appendChild(btn);
+        });
+
+        // A partir del segundo nivel se puede volver a empezar
+        if (nivel > 1) {
+            const volver = document.createElement('button');
+            volver.innerText = "↩ Volver a las preguntas iniciales";
+            volver.style.gridColumn = "1 / -1";
+            volver.style.textAlign = "center";
+            volver.style.fontWeight = "bold";
+            volver.onclick = () => cargarPreguntas();
+            contenedor.appendChild(volver);
+        }
+    }
+
+    function responderEnGlobito(pregunta, respuesta) {
+        const globitoBox = document.getElementById('globitoBox');
+        const pregBox = document.getElementById('globitoPregunta');
+        const respBox = document.getElementById('globitoRespuesta');
+
+        pregBox.style.display = 'block';
+        pregBox.innerText = `Tú le preguntaste: "${pregunta}"`;
+        respBox.innerText = respuesta;
+
+        // Reiniciar animación del globito al responder
+        globitoBox.classList.remove('animar-globito');
+        void globitoBox.offsetWidth; // Forzar reflow
+        globitoBox.classList.add('animar-globito');
+    }
+
+    // Carga inicial
+    window.onload = function() {
+        cargarPreguntas();
+    };
+
+    // Juego "Escapa de Remigia": se carga solo la primera vez que se abre la pestaña
+    // y se pausa al salir de ella (no consume recursos en las demás secciones).
+    let juegoCargado = false;
+    function juegoVisible(visible) {
+        const f = document.getElementById('juegoFrame');
+        if (!f) return;
+        if (visible) {
+            if (!juegoCargado) {
+                // Juego hecho en Unity (WebGL): la carpeta "EscapaDeRemigia" va junto a este index.html
+                f.src = 'EscapaDeRemigia/index.html';
+                juegoCargado = true;
+            } else if (f.contentWindow) {
+                f.contentWindow.postMessage('resume', '*');
+            }
+        } else if (juegoCargado && f.contentWindow) {
+            f.contentWindow.postMessage('pause', '*');
+        }
+    }
+    function juegoPantallaCompleta() {
+        const w = document.getElementById('juegoWrap');
+        if (w.requestFullscreen) w.requestFullscreen();
+        else if (w.webkitRequestFullscreen) w.webkitRequestFullscreen();
+    }
+</script>
+</body>
+</html>
