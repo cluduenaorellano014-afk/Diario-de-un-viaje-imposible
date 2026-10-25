@@ -795,6 +795,18 @@
             position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
             color: var(--gold-light); font-weight: 700; pointer-events: none;
         }
+        .juego-wrap:fullscreen { width: 100%; height: 100%; min-height: 0; border: 0; border-radius: 0; box-shadow: none; }
+        .juego-wrap:-webkit-full-screen { width: 100%; height: 100%; min-height: 0; border: 0; border-radius: 0; box-shadow: none; }
+        /* Respaldo cuando el navegador no permite pantalla completa (por ejemplo, en iPhone) */
+        .juego-wrap.juego-max {
+            position: fixed; inset: 0; z-index: 10000;
+            width: 100vw; height: 100vh; height: 100dvh; min-height: 0;
+            border: 0; border-radius: 0; box-shadow: none;
+        }
+        .juego-wrap.juego-max .juego-fs { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: calc(12px + env(safe-area-inset-left, 0px)); }
+        html.juego-max-abierto, html.juego-max-abierto body { overflow: hidden; }
+        /* la animación de la pestaña deja un transform que haría que "fixed" no cubra la ventana */
+        html.juego-max-abierto #tab-juego { animation: none; opacity: 1; transform: none; }
 
 
         /* ---------- SWITCH MODO CLARO / OSCURO ---------- */
@@ -2476,11 +2488,55 @@
             f.contentWindow.postMessage('pause', '*');
         }
     }
+    // Pantalla completa: usa la API del navegador y, si no está disponible o la bloquea
+    // (iPhone, páginas incrustadas, etc.), agranda el juego a toda la ventana.
+    function juegoFsElemento() {
+        return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+    function juegoEnPantallaCompleta() {
+        const w = document.getElementById('juegoWrap');
+        return juegoFsElemento() === w || w.classList.contains('juego-max');
+    }
+    function juegoMaximizar(activar) {
+        document.getElementById('juegoWrap').classList.toggle('juego-max', activar);
+        document.documentElement.classList.toggle('juego-max-abierto', activar);
+        juegoActualizarBoton();
+    }
+    function juegoActualizarBoton() {
+        const b = document.querySelector('.juego-fs');
+        if (b) b.textContent = juegoEnPantallaCompleta() ? '✕ Salir de pantalla completa' : '⛶ Pantalla completa';
+        const f = document.getElementById('juegoFrame');
+        if (f && juegoEnPantallaCompleta()) f.focus();
+    }
     function juegoPantallaCompleta() {
         const w = document.getElementById('juegoWrap');
-        if (w.requestFullscreen) w.requestFullscreen();
-        else if (w.webkitRequestFullscreen) w.webkitRequestFullscreen();
+        if (juegoEnPantallaCompleta()) {
+            if (w.classList.contains('juego-max')) juegoMaximizar(false);
+            else if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            return;
+        }
+        const pedir = w.requestFullscreen || w.webkitRequestFullscreen;
+        if (!pedir) { juegoMaximizar(true); return; }
+        try {
+            const p = pedir.call(w);
+            if (p && p.catch) p.catch(() => juegoMaximizar(true));
+        } catch (e) {
+            juegoMaximizar(true);
+            return;
+        }
+        // algunos navegadores ni aceptan ni rechazan el pedido: si no entró, usar el respaldo
+        setTimeout(() => { if (!juegoFsElemento()) juegoMaximizar(true); }, 800);
     }
+    function juegoCambioPantallaCompleta() {
+        if (juegoFsElemento()) juegoMaximizar(false);
+        else juegoActualizarBoton();
+    }
+    document.addEventListener('fullscreenchange', juegoCambioPantallaCompleta);
+    document.addEventListener('webkitfullscreenchange', juegoCambioPantallaCompleta);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && document.getElementById('juegoWrap').classList.contains('juego-max')) juegoMaximizar(false);
+    });
 </script>
 </body>
 </html>
