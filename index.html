@@ -183,9 +183,7 @@
             justify-content: center;
             gap: 6px;
             padding: 10px 14px;
-            background: rgba(36,20,11,.94);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(36,20,11,.96);
             border-bottom: 1px solid rgba(201,162,74,.35);
             box-shadow: 0 8px 24px -8px rgba(0,0,0,.45);
             overflow-x: auto;
@@ -785,9 +783,8 @@
         .juego-fs {
             position: absolute; bottom: 12px; left: 12px; z-index: 5;
             padding: 7px 14px; border-radius: 999px; cursor: pointer;
-            border: 1px solid var(--gold); background: rgba(20,10,4,.78);
+            border: 1px solid var(--gold); background: rgba(20,10,4,.88);
             color: var(--gold-light); font-family: var(--font-body); font-size: .85rem; font-weight: 700;
-            backdrop-filter: blur(6px);
             transition: all .25s ease;
         }
         .juego-fs:hover { background: var(--gold); color: var(--brown-900); }
@@ -828,8 +825,6 @@
             font-weight: 600;
             cursor: pointer;
             box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             transition: transform .2s ease, box-shadow .2s ease;
         }
         .theme-switch:hover { transform: translateY(-2px); }
@@ -1334,7 +1329,7 @@
             <h3>1. Plaza Mayor (de Mayo)</h3>
             <div class="iframe-360-container">
                 <iframe 
-                    src="https://momento360.com/e/u/cfac6b4618b14889a548c71cf35b5355?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    data-src="https://momento360.com/e/u/cfac6b4618b14889a548c71cf35b5355?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
                     allowfullscreen 
                     allow="xr-spatial-tracking">
                 </iframe>
@@ -1345,7 +1340,7 @@
             <h3>2. Jaboneria de Vieytes</h3>
             <div class="iframe-360-container">
                 <iframe 
-                    src="https://momento360.com/e/u/54d810f4d1084ae09c698ac727b3402c?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    data-src="https://momento360.com/e/u/54d810f4d1084ae09c698ac727b3402c?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
                     allowfullscreen 
                     allow="xr-spatial-tracking">
                 </iframe>
@@ -1356,7 +1351,7 @@
             <h3>3. Biblioteca de Don Blas de Ulloa</h3>
             <div class="iframe-360-container">
                 <iframe 
-                    src="https://momento360.com/e/u/c35356cdbc404d53909839db65ea0955?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
+                    data-src="https://momento360.com/e/u/c35356cdbc404d53909839db65ea0955?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
                     allowfullscreen 
                     allow="xr-spatial-tracking">
                 </iframe>
@@ -1450,6 +1445,16 @@
         }
 
         juegoVisible(tabId === 'juego');
+        vista360Visible(tabId === 'vista360');
+    }
+
+    // Los visores 360° son escenas 3D pesadas: se cargan solo al abrir su pestaña y se descargan
+    // al salir, para que no compitan con el juego por la placa de video (Safari no los pausa solos).
+    function vista360Visible(visible) {
+        document.querySelectorAll('#tab-vista360 iframe[data-src]').forEach(f => {
+            if (visible) { if (f.getAttribute('src') !== f.dataset.src) f.src = f.dataset.src; }
+            else if (f.getAttribute('src')) f.removeAttribute('src');
+        });
     }
 
     // Datos y Lógica del Chat Interactivo con 5 Personajes
