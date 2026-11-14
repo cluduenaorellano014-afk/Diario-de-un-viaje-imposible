@@ -561,6 +561,21 @@
             border: none;
         }
 
+        .par-360 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .par-360 h4 {
+            margin: 14px 0 0;
+            text-align: center;
+            font-size: 1rem;
+            color: var(--gold);
+        }
+        @media (max-width: 800px) {
+            .par-360 { grid-template-columns: 1fr; }
+        }
+
         /* ---------- CHAT INTERACTIVO ---------- */
         .chat-container {
             background: var(--paper);
@@ -1327,35 +1342,68 @@
 
         <div class="info-card">
             <h3>1. Plaza Mayor (de Mayo)</h3>
-            <div class="iframe-360-container">
+            <div class="par-360">
+<div>
+<h4>🌐 Vista 360°</h4>
+<div class="iframe-360-container">
                 <iframe 
                     data-src="https://momento360.com/e/u/cfac6b4618b14889a548c71cf35b5355?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
                     allowfullscreen 
                     allow="xr-spatial-tracking">
                 </iframe>
             </div>
+</div>
+<div>
+<h4>🧊 Recorrido en 3D</h4>
+<div class="iframe-360-container">
+<iframe data-src="https://cluduenaorellano014-afk.github.io/recorridos-coloniales-3d/plaza/" allowfullscreen allow="fullscreen; autoplay; xr-spatial-tracking" title="Recorrido 3D plaza"></iframe>
+</div>
+</div>
+</div>
         </div>
 
         <div class="info-card">
             <h3>2. Jaboneria de Vieytes</h3>
-            <div class="iframe-360-container">
+            <div class="par-360">
+<div>
+<h4>🌐 Vista 360°</h4>
+<div class="iframe-360-container">
                 <iframe 
                     data-src="https://momento360.com/e/u/54d810f4d1084ae09c698ac727b3402c?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
                     allowfullscreen 
                     allow="xr-spatial-tracking">
                 </iframe>
             </div>
+</div>
+<div>
+<h4>🧊 Recorrido en 3D</h4>
+<div class="iframe-360-container">
+<iframe data-src="https://cluduenaorellano014-afk.github.io/recorridos-coloniales-3d/sala/" allowfullscreen allow="fullscreen; autoplay; xr-spatial-tracking" title="Recorrido 3D sala"></iframe>
+</div>
+</div>
+</div>
         </div>
 
         <div class="info-card">
             <h3>3. Biblioteca de Don Blas de Ulloa</h3>
-            <div class="iframe-360-container">
+            <div class="par-360">
+<div>
+<h4>🌐 Vista 360°</h4>
+<div class="iframe-360-container">
                 <iframe 
                     data-src="https://momento360.com/e/u/c35356cdbc404d53909839db65ea0955?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true" 
                     allowfullscreen 
                     allow="xr-spatial-tracking">
                 </iframe>
             </div>
+</div>
+<div>
+<h4>🧊 Recorrido en 3D</h4>
+<div class="iframe-360-container">
+<iframe data-src="https://cluduenaorellano014-afk.github.io/recorridos-coloniales-3d/biblioteca/" allowfullscreen allow="fullscreen; autoplay; xr-spatial-tracking" title="Recorrido 3D biblioteca"></iframe>
+</div>
+</div>
+</div>
         </div>
     </div>
 
